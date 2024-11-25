@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  transaction_date: 2024-11-25 06:47:24
+  transaction_type: MyString
+  units: 9.99
+  unit_price: 9.99
+  investment: one
+
+two:
+  transaction_date: 2024-11-25 06:47:24
+  transaction_type: MyString
+  units: 9.99
+  unit_price: 9.99
+  investment: two

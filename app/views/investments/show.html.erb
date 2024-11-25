@@ -1,0 +1,15 @@
+<%= render "investment_header", portfolio: @portfolio, investment: @investment %>
+
+<div class="container mx-auto px-4 py-8">
+  <%= render "performance", investment: @investment %>
+
+  <div class="mt-8">
+    <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Transactions</h2>
+    <%= render "transactions", portfolio: @portfolio, investment: @investment, transactions: @transactions %>
+  </div>
+
+  <div class="mt-8">
+    <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Notes</h2>
+    <%= render "notes", portfolio: @portfolio, notable: @investment, notes: @notes %>
+  </div>
+</div>

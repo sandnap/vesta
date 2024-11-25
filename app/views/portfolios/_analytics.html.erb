@@ -1,0 +1,43 @@
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-4" data-controller="chart"
+  data-chart-portfolio-data-value="<%= {
+    labels: @portfolio.investments.map(&:name),
+    data: @portfolio.investments.map(&:current_value),
+    colors: @portfolio.investments.map.with_index { |_, i| "hsl(#{i * 360/@portfolio.investments.size}, 70%, 50%)" }
+  }.to_json %>"
+  data-chart-performance-data-value="<%= {
+    labels: @portfolio.transactions.order(transaction_date: :asc).pluck(:transaction_date).map { |date| date.strftime('%Y-%m-%d') },
+    data: @portfolio.transactions.order(transaction_date: :asc).map { |t| t.calculate_portfolio_value_at_date }
+  }.to_json %>">
+
+  <div class="p-4 bg-white rounded-lg shadow dark:bg-gray-800">
+    <canvas data-chart-target="allocation"></canvas>
+  </div>
+
+  <div class="p-4 bg-white rounded-lg shadow dark:bg-gray-800">
+    <canvas data-chart-target="performance"></canvas>
+  </div>
+
+  <div class="lg:col-span-2 p-4 bg-white rounded-lg shadow dark:bg-gray-800">
+    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Portfolio Summary</h3>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="p-4 bg-gray-50 rounded-lg dark:bg-gray-700">
+        <p class="text-sm text-gray-500 dark:text-gray-400">Total Value</p>
+        <p class="text-2xl font-bold text-gray-900 dark:text-white">
+          <%= number_to_currency(@portfolio.total_value) %>
+        </p>
+      </div>
+      <div class="p-4 bg-gray-50 rounded-lg dark:bg-gray-700">
+        <p class="text-sm text-gray-500 dark:text-gray-400">Total Return</p>
+        <p class="text-2xl font-bold <%= @portfolio.total_return >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400' %>">
+          <%= number_to_percentage(@portfolio.total_return * 100, precision: 2) %>
+        </p>
+      </div>
+      <div class="p-4 bg-gray-50 rounded-lg dark:bg-gray-700">
+        <p class="text-sm text-gray-500 dark:text-gray-400">Number of Investments</p>
+        <p class="text-2xl font-bold text-gray-900 dark:text-white">
+          <%= @portfolio.investments.count %>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,70 @@
+<%= form_with(model: [portfolio, investment, transaction], class: "space-y-4", data: { controller: "transaction", current_price: investment.current_unit_price }) do |form| %>
+  <% if transaction.errors.any? %>
+    <div class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
+      <h2><%= pluralize(transaction.errors.count, "error") %> prohibited this transaction from being saved:</h2>
+      <ul class="mt-1.5 list-disc list-inside">
+        <% transaction.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :transaction_date, class: "block mb-2 text-sm font-medium text-gray-900 dark:text-white" %>
+    <div class="relative">
+      <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+        <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z" />
+        </svg>
+      </div>
+      <%= form.datetime_field :transaction_date, class: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500", value: Time.current.strftime("%Y-%m-%dT%H:%M") %>
+    </div>
+  </div>
+
+  <div>
+    <%= form.label :transaction_type, class: "block mb-2 text-sm font-medium text-gray-900 dark:text-white" %>
+    <div class="grid grid-cols-2 gap-4">
+      <div class="flex items-center pl-4 border border-gray-200 rounded dark:border-gray-700">
+        <%= form.radio_button :transaction_type, :buy, class: "w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600", data: { transaction_target: "type" } %>
+        <%= form.label :transaction_type_buy, "Buy", class: "w-full py-4 ml-2 text-sm font-medium text-gray-900 dark:text-gray-300" %>
+      </div>
+      <div class="flex items-center pl-4 border border-gray-200 rounded dark:border-gray-700">
+        <%= form.radio_button :transaction_type, :sell, class: "w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600", data: { transaction_target: "type" } %>
+        <%= form.label :transaction_type_sell, "Sell", class: "w-full py-4 ml-2 text-sm font-medium text-gray-900 dark:text-gray-300" %>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <%= form.label :units, class: "block mb-2 text-sm font-medium text-gray-900 dark:text-white" %>
+    <%= form.number_field :units, step: :any, class: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500", placeholder: "Enter number of units", data: { transaction_target: "units", action: "input->transaction#validateUnits" } %>
+  </div>
+
+  <div>
+    <%= form.label :unit_price, class: "block mb-2 text-sm font-medium text-gray-900 dark:text-white" %>
+    <div class="flex items-center space-x-2">
+      <div class="relative flex-1">
+        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+          <span class="text-gray-500 dark:text-gray-400">$</span>
+        </div>
+        <%= form.number_field :unit_price, step: :any, class: "pl-7 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500", placeholder: "0.00", data: { transaction_target: "unitPrice", action: "input->transaction#validateUnitPrice" } %>
+      </div>
+      <button type="button" data-action="transaction#updateCurrentPrice" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">
+        Use Current Price
+      </button>
+    </div>
+  </div>
+
+  <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+    <div class="flex items-center justify-between">
+      <span class="text-sm font-medium text-gray-900 dark:text-white">Total Value:</span>
+      <span class="text-lg font-semibold text-gray-900 dark:text-white" data-transaction-target="totalValue">$0.00</span>
+    </div>
+  </div>
+
+  <div class="flex items-center justify-end space-x-2">
+    <%= form.submit class: "text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" %>
+    <%= link_to "Cancel", :back, class: "text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600" %>
+  </div>
+<% end %>

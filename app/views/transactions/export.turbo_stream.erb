@@ -1,0 +1,35 @@
+<%= turbo_stream.update "export_preview" do %>
+  <div class="relative overflow-x-auto">
+    <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+      <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+        <tr>
+          <th scope="col" class="px-6 py-3">Date</th>
+          <th scope="col" class="px-6 py-3">Type</th>
+          <th scope="col" class="px-6 py-3">Units</th>
+          <th scope="col" class="px-6 py-3">Unit Price</th>
+          <th scope="col" class="px-6 py-3">Total Value</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @transactions.each do |transaction| %>
+          <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+            <td class="px-6 py-4"><%= transaction.transaction_date.strftime("%Y-%m-%d") %></td>
+            <td class="px-6 py-4"><%= transaction.transaction_type.titleize %></td>
+            <td class="px-6 py-4"><%= number_with_delimiter(transaction.units) %></td>
+            <td class="px-6 py-4"><%= number_to_currency(transaction.unit_price) %></td>
+            <td class="px-6 py-4"><%= number_to_currency(transaction.total_value) %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="mt-4 flex items-center justify-end space-x-2">
+    <%= link_to "Export CSV",
+                export_portfolio_investment_transactions_path(@portfolio, @investment, format: :csv, start_date: params[:start_date]),
+                class: "text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" %>
+    <%= link_to "Export JSON",
+                export_portfolio_investment_transactions_path(@portfolio, @investment, format: :json, start_date: params[:start_date]),
+                class: "text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600" %>
+  </div>
+<% end %>

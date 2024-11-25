@@ -15,14 +15,12 @@
           <span class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white">Vesta</span>
         </a>
         <% if Current.user %>
-          <div class="ml-4">
-            <%= form_tag portfolios_path, method: :get, class: "flex items-center", data: { turbo_frame: "content" } do %>
-              <label for="portfolio-select" class="sr-only">Select portfolio</label>
-              <select id="portfolio-select" name="portfolio_id" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                <option value="">Select Portfolio</option>
-                <%= options_from_collection_for_select(Current.user.portfolios, :id, :name, params[:portfolio_id]) %>
-              </select>
-            <% end %>
+          <div class="ml-4" data-controller="portfolio">
+            <label for="portfolio-select" class="sr-only">Select portfolio</label>
+            <select id="portfolio-select" data-portfolio-target="select" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+              <option value="">Select Portfolio</option>
+              <%= options_from_collection_for_select(Current.user.portfolios, :id, :name, params[:id]) %>
+            </select>
           </div>
         <% end %>
       </div>

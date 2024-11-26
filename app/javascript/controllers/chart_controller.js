@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+
 // Connects to data-controller="chart"
 export default class extends Controller {
   static targets = ["canvas"]
@@ -8,6 +9,9 @@ export default class extends Controller {
   }
 
   connect() {
+    console.log("Chart controller connected")
+    console.log("Chart type:", this.chartTypeValue)
+    console.log("Chart data:", this.dataValue)
     this.initializeChart()
   }
 
@@ -24,8 +28,26 @@ export default class extends Controller {
         maintainAspectRatio: false,
         plugins: {
           legend: {
+            position: "right",
             labels: {
               color: textColor,
+              padding: 20,
+              font: {
+                size: 12,
+              },
+            },
+          },
+          tooltip: {
+            callbacks: {
+              label: function (context) {
+                const value = context.raw
+                const total = context.dataset.data.reduce((a, b) => a + b, 0)
+                const percentage = ((value / total) * 100).toFixed(1)
+                return `${context.label}: ${new Intl.NumberFormat("en-US", {
+                  style: "currency",
+                  currency: "USD",
+                }).format(value)}`
+              },
             },
           },
         },
@@ -59,23 +81,28 @@ export default class extends Controller {
       },
     }
 
+    console.log("Chart config:", config)
     new Chart(this.canvasTarget, config)
   }
 
   get chartData() {
     const data = this.dataValue
+    console.log("Processing chart data:", data)
 
     if (this.chartTypeValue === "doughnut") {
-      return {
+      const chartData = {
         labels: data.labels,
         datasets: [
           {
             data: data.values,
             backgroundColor: this.generateColors(data.labels.length),
             borderWidth: 1,
+            borderColor: document.documentElement.classList.contains("dark") ? "#1f2937" : "#ffffff",
           },
         ],
       }
+      console.log("Doughnut chart data:", chartData)
+      return chartData
     }
 
     if (this.chartTypeValue === "line") {
@@ -98,10 +125,20 @@ export default class extends Controller {
 
   generateColors(count) {
     const colors = []
+    const baseHues = [210, 330, 120, 45, 275, 175, 15, 300] // Predefined hues for better color distribution
+
     for (let i = 0; i < count; i++) {
-      const hue = ((i * 360) / count) % 360
-      colors.push(`hsl(${hue}, 70%, 50%)`)
+      const hue = baseHues[i % baseHues.length]
+      const isDarkMode = document.documentElement.classList.contains("dark")
+
+      if (isDarkMode) {
+        colors.push(`hsla(${hue}, 70%, 60%, 0.8)`) // Brighter, slightly transparent colors for dark mode
+      } else {
+        colors.push(`hsl(${hue}, 70%, 50%)`) // Standard colors for light mode
+      }
     }
+
+    console.log("Generated colors:", colors)
     return colors
   }
 }

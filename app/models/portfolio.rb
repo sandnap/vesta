@@ -18,8 +18,9 @@ class Portfolio < ApplicationRecord
 
     # Map investments to data points
     investment_data = valid_investments.map do |investment|
+      percentage = (investment.current_value / total_value) * 100
       {
-        label: "#{investment.name} (#{number_to_percentage((investment.current_value / total_value) * 100, precision: 1)})",
+        label: "#{investment.name} (#{number_to_percentage(percentage, precision: 1)})",
         value: investment.current_value.to_f
       }
     end

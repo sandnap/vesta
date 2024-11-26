@@ -1,21 +1,24 @@
-<div class="bg-white dark:bg-gray-800 shadow sm:rounded-lg mb-6">
-  <div class="px-4 py-5 sm:px-6">
+<div class="bg-white shadow dark:bg-gray-800">
+  <div class="container mx-auto px-4 py-6">
     <div class="flex items-center justify-between">
       <div>
-        <div class="flex items-center">
-          <h2 class="text-xl font-semibold leading-6 text-gray-900 dark:text-white"><%= investment.name %></h2>
-          <% if investment.symbol.present? %>
-            <span class="ml-2 inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10 dark:bg-blue-900 dark:text-blue-300">
-              <%= investment.symbol %>
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white"><%= investment.name %></h1>
+        <div class="mt-2 flex items-center space-x-4">
+          <span class="text-sm text-gray-500 dark:text-gray-400">
+            <%= investment.investment_type&.titleize || 'Type Not Set' %>
+          </span>
+          <span class="text-sm text-gray-500 dark:text-gray-400">
+            <%= investment.status&.titleize || 'Status Not Set' %>
+          </span>
+          <% if investment.exit_target_type.present? %>
+            <span class="text-sm text-gray-500 dark:text-gray-400">
+              Exit Target: <%= investment.exit_target_type&.titleize %>
             </span>
           <% end %>
         </div>
-        <p class="mt-1 max-w-2xl text-sm text-gray-500 dark:text-gray-400">
-          Created <%= time_ago_in_words(investment.created_at) %> ago
-        </p>
       </div>
-      <div class="flex items-center space-x-3">
-        <%= link_to edit_portfolio_investment_path(portfolio, investment), data: { turbo_frame: "modal" }, class: "text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600" do %>
+      <div class="flex items-center space-x-4">
+        <%= link_to edit_portfolio_investment_path(portfolio, investment), data: { turbo_frame: "modal" }, class: "text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" do %>
           <div class="flex items-center">
             <svg class="w-4 h-4 mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
@@ -23,37 +26,7 @@
             Edit Investment
           </div>
         <% end %>
-        <%= link_to new_portfolio_investment_transaction_path(portfolio, investment), data: { turbo_frame: "modal" }, class: "text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" do %>
-          <div class="flex items-center">
-            <svg class="w-4 h-4 mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-            </svg>
-            New Transaction
-          </div>
-        <% end %>
       </div>
     </div>
-  </div>
-  <div class="border-t border-gray-200 dark:border-gray-700 px-4 py-5 sm:px-6">
-    <dl class="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-4">
-      <div class="sm:col-span-1">
-        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Current Units</dt>
-        <dd class="mt-1 text-sm text-gray-900 dark:text-white"><%= number_with_delimiter(investment.current_units) %></dd>
-      </div>
-      <div class="sm:col-span-1">
-        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Current Unit Price</dt>
-        <dd class="mt-1 text-sm text-gray-900 dark:text-white"><%= number_to_currency(investment.current_unit_price) %></dd>
-      </div>
-      <div class="sm:col-span-1">
-        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Value</dt>
-        <dd class="mt-1 text-sm text-gray-900 dark:text-white">
-          <%= number_to_currency(investment.current_units * investment.current_unit_price) if investment.current_units && investment.current_unit_price %>
-        </dd>
-      </div>
-      <div class="sm:col-span-1">
-        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Exit Target Type</dt>
-        <dd class="mt-1 text-sm text-gray-900 dark:text-white"><%= investment.exit_target_type&.titleize %></dd>
-      </div>
-    </dl>
   </div>
 </div>

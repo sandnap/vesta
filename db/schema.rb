@@ -21,7 +21,7 @@ ActiveRecord::Schema[8.0].define(version: 2024_11_25_134732) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["portfolio_id", "name"], name: "index_investments_on_portfolio_id_and_name", unique: true
-    t.index ["portfolio_id", "symbol"], name: "index_investments_on_portfolio_id_and_symbol", unique: true, where: "symbol IS NOT NULL /*application='VestaCursor'*/ /*application='VestaCursor'*/ /*application='VestaCursor'*/ /*application='VestaCursor'*/"
+    t.index ["portfolio_id", "symbol"], name: "index_investments_on_portfolio_id_and_symbol", unique: true, where: "symbol IS NOT NULL /*application='VestaCursor'*/ /*application='VestaCursor'*/ /*application='VestaCursor'*/ /*application='VestaCursor'*/ /*application='VestaCursor'*/ /*application='VestaCursor'*/ /*application='VestaCursor'*/"
     t.index ["portfolio_id"], name: "index_investments_on_portfolio_id"
   end
 

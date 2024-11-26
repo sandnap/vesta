@@ -1,3 +1,7 @@
 <%= render "shared/modal", title: "New Transaction" do %>
-  <%= render "form", portfolio: @portfolio, investment: @investment, transaction: @transaction %>
+  <% if @investment %>
+    <%= render "form", portfolio: @portfolio, investment: @investment, transaction: @transaction %>
+  <% else %>
+    <%= render "portfolio_form", portfolio: @portfolio, transaction: @transaction %>
+  <% end %>
 <% end %>

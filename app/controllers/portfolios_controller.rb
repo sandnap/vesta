@@ -6,8 +6,8 @@ class PortfoliosController < ApplicationController
   end
 
   def show
-    @investments = @portfolio.investments.includes(:transactions)
-    @notes = @portfolio.notes.order(importance: :asc, created_at: :desc)
+    @investments = @portfolio.investments.includes(:transactions).order(:name)
+    @notes = @portfolio.notes.order(created_at: :desc)
   end
 
   def new

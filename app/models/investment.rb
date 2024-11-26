@@ -7,11 +7,32 @@ class Investment < ApplicationRecord
   validates :current_unit_price, numericality: { greater_than_or_equal_to: 0, allow_nil: true }
   validates :current_units, numericality: { allow_nil: true }
 
+  attribute :investment_type, :integer
+  attribute :status, :integer
+  attribute :exit_target_type, :integer
+
+  enum :investment_type, {
+    stock: 0,
+    bond: 1,
+    mutual_fund: 2,
+    etf: 3,
+    real_estate: 4,
+    cryptocurrency: 5,
+    private_equity: 6,
+    other: 7
+  }
+
+  enum :status, {
+    active: 0,
+    closed: 1,
+    pending: 2
+  }
+
   enum :exit_target_type, {
     specific_date: 0,
     target_unit_value: 1,
     total_investment_value: 2
-  }, prefix: true
+  }
 
   def current_value
     return 0 unless current_units && current_unit_price

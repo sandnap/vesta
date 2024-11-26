@@ -1,4 +1,4 @@
-<%= form_with(model: [portfolio, investment], class: "space-y-4") do |form| %>
+<%= form_with(model: [portfolio, investment], class: "space-y-4", data: { turbo_stream: true }) do |form| %>
   <% if investment.errors.any? %>
     <div class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
       <h2><%= pluralize(investment.errors.count, "error") %> prohibited this investment from being saved:</h2>
@@ -21,6 +21,16 @@
   </div>
 
   <div>
+    <%= form.label :investment_type, class: "block mb-2 text-sm font-medium text-gray-900 dark:text-white" %>
+    <%= form.select :investment_type, Investment.investment_types.keys.map { |type| [type.titleize, type] }, { include_blank: "Select investment type" }, class: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" %>
+  </div>
+
+  <div>
+    <%= form.label :status, class: "block mb-2 text-sm font-medium text-gray-900 dark:text-white" %>
+    <%= form.select :status, Investment.statuses.keys.map { |status| [status.titleize, status] }, { include_blank: "Select status" }, class: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" %>
+  </div>
+
+  <div>
     <%= form.label :exit_target_type, class: "block mb-2 text-sm font-medium text-gray-900 dark:text-white" %>
     <%= form.select :exit_target_type, Investment.exit_target_types.keys.map { |type| [type.titleize, type] }, { include_blank: "Select exit target type" }, class: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" %>
   </div>
@@ -29,10 +39,14 @@
     <%= form.label :current_unit_price, class: "block mb-2 text-sm font-medium text-gray-900 dark:text-white" %>
     <div class="relative">
       <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-        <span class="text-gray-500 dark:text-gray-400">$</span>
       </div>
-      <%= form.number_field :current_unit_price, step: :any, class: "pl-7 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500", placeholder: "0.00" %>
+      <%= form.number_field :current_unit_price, step: :any, class: "pl-7 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500", placeholder: "$0.00" %>
     </div>
+  </div>
+
+  <div>
+    <%= form.label :current_units, class: "block mb-2 text-sm font-medium text-gray-900 dark:text-white" %>
+    <%= form.number_field :current_units, step: :any, class: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500", placeholder: "Enter current units" %>
   </div>
 
   <div class="flex items-center justify-end space-x-2">
@@ -40,3 +54,4 @@
     <%= link_to "Cancel", :back, class: "text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600" %>
   </div>
 <% end %>
+

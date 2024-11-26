@@ -1,12 +1,14 @@
-class CreateInvestments < ActiveRecord::Migration[8.0]
+class CreateInvestments < ActiveRecord::Migration[7.1]
   def change
     create_table :investments do |t|
+      t.references :portfolio, null: false, foreign_key: true
       t.string :name, null: false
       t.string :symbol
-      t.integer :exit_target_type
+      t.integer :investment_type, default: 0, null: false
+      t.integer :status, default: 0, null: false
       t.decimal :current_units, precision: 18, scale: 8
       t.decimal :current_unit_price, precision: 18, scale: 8
-      t.references :portfolio, null: false, foreign_key: true, index: true
+      t.integer :exit_target_type
 
       t.timestamps
     end

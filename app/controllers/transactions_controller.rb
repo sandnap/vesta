@@ -1,6 +1,6 @@
 class TransactionsController < ApplicationController
   before_action :set_portfolio
-  before_action :set_investment
+  before_action :set_investment, except: [ :new, :create ]
   before_action :set_transaction, only: [ :edit, :update, :destroy ]
 
   def index
@@ -14,14 +14,37 @@ class TransactionsController < ApplicationController
   end
 
   def new
-    @transaction = @investment.transactions.build
+    @transaction = if params[:investment_id]
+      @investment = @portfolio.investments.find(params[:investment_id])
+      @investment.transactions.build
+    else
+      Transaction.new
+    end
   end
 
   def create
-    @transaction = @investment.transactions.build(transaction_params)
+    @transaction = if params[:investment_id]
+      @investment = @portfolio.investments.find(params[:investment_id])
+      @investment.transactions.build(transaction_params)
+      respond_to do |format|
+        format.html { redirect_to portfolio_investment_path(@portfolio, @investment), notice: "Transaction was successfully created." }
+        format.turbo_stream do
+          render turbo_stream: [
+            turbo_stream.update("modal", ""),
+            turbo_stream.replace("transactions_table",
+              partial: "transactions/transactions",
+              locals: { portfolio: @portfolio, investment: @investment, transactions: @investment.transactions }
+            )
+          ]
+        end
+      end
+    else
+      @investment = @portfolio.investments.find(transaction_params[:investment_id])
+      @investment.transactions.build(transaction_params)
+    end
 
     if @transaction.save
-      redirect_to portfolio_investment_path(@portfolio, @investment),
+      redirect_to params[:investment_id] ? portfolio_investment_path(@portfolio, @investment) : portfolio_path(@portfolio),
                   notice: "Transaction was successfully created."
     else
       render :new, status: :unprocessable_entity
@@ -33,8 +56,18 @@ class TransactionsController < ApplicationController
 
   def update
     if @transaction.update(transaction_params)
-      redirect_to portfolio_investment_path(@portfolio, @investment),
-                  notice: "Transaction was successfully updated."
+      respond_to do |format|
+        format.html { redirect_to portfolio_investment_path(@portfolio, @investment), notice: "Transaction was successfully updated." }
+        format.turbo_stream do
+          render turbo_stream: [
+            turbo_stream.update("modal", ""),
+            turbo_stream.replace("transactions_table",
+              partial: "investments/transactions",
+              locals: { portfolio: @portfolio, investment: @investment, transactions: @investment.transactions }
+            )
+          ]
+        end
+      end
     else
       render :edit, status: :unprocessable_entity
     end
@@ -74,6 +107,6 @@ class TransactionsController < ApplicationController
   end
 
   def transaction_params
-    params.require(:transaction).permit(:transaction_date, :transaction_type, :units, :unit_price)
+    params.require(:transaction).permit(:transaction_date, :transaction_type, :units, :unit_price, :investment_id)
   end
 end

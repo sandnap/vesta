@@ -1,103 +1,48 @@
-<div class="space-y-6" data-controller="chart"
-  data-chart-performance-data-value="<%= investment.performance_data.to_json %>">
-
-  <div class="p-4 bg-white rounded-lg shadow dark:bg-gray-800">
-    <canvas data-chart-target="performance"></canvas>
-  </div>
-
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-    <div class="p-4 bg-white rounded-lg shadow dark:bg-gray-800">
-      <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400">Returns</h4>
-      <div class="mt-4 space-y-3">
-        <div>
-          <p class="text-sm text-gray-500 dark:text-gray-400">Total Return</p>
-          <p class="text-lg font-semibold <%= investment.total_return >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400' %>">
-            <%= number_to_percentage(investment.total_return * 100, precision: 2) %>
-            (<%= number_to_currency(investment.total_return_value) %>)
-          </p>
-        </div>
-        <div>
-          <p class="text-sm text-gray-500 dark:text-gray-400">Annualized Return</p>
-          <p class="text-lg font-semibold <%= investment.annualized_return >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400' %>">
-            <%= number_to_percentage(investment.annualized_return, precision: 2) %>
-          </p>
-        </div>
+<div class="bg-white shadow rounded-lg dark:bg-gray-800">
+  <div class="p-6">
+    <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Performance Metrics</h2>
+    <dl class="grid grid-cols-1 gap-5 sm:grid-cols-4">
+      <div class="px-4 py-5 bg-gray-50 shadow rounded-lg overflow-hidden sm:p-6 dark:bg-gray-700">
+        <dt class="text-sm font-medium text-gray-500 truncate dark:text-gray-400">
+          Current Units
+        </dt>
+        <dd class="mt-1 text-3xl font-semibold text-gray-900 dark:text-white">
+          <%= number_with_delimiter(investment.current_units) %>
+        </dd>
       </div>
-    </div>
 
-    <div class="p-4 bg-white rounded-lg shadow dark:bg-gray-800">
-      <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400">Gain/Loss</h4>
-      <div class="mt-4 space-y-3">
-        <div>
-          <p class="text-sm text-gray-500 dark:text-gray-400">Realized</p>
-          <p class="text-lg font-semibold <%= investment.realized_gain_loss >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400' %>">
-            <%= number_to_currency(investment.realized_gain_loss) %>
-          </p>
-        </div>
-        <div>
-          <p class="text-sm text-gray-500 dark:text-gray-400">Unrealized</p>
-          <p class="text-lg font-semibold <%= investment.unrealized_gain_loss >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400' %>">
-            <%= number_to_currency(investment.unrealized_gain_loss) %>
-          </p>
-        </div>
+      <div class="px-4 py-5 bg-gray-50 shadow rounded-lg overflow-hidden sm:p-6 dark:bg-gray-700">
+        <dt class="text-sm font-medium text-gray-500 truncate dark:text-gray-400">
+          Current Unit Price
+        </dt>
+        <dd class="mt-1 text-3xl font-semibold text-gray-900 dark:text-white">
+          <%= number_to_currency(investment.current_unit_price) %>
+        </dd>
       </div>
-    </div>
 
-    <div class="p-4 bg-white rounded-lg shadow dark:bg-gray-800">
-      <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400">Average Prices</h4>
-      <div class="mt-4 space-y-3">
-        <div>
-          <p class="text-sm text-gray-500 dark:text-gray-400">Buy Price</p>
-          <p class="text-lg font-semibold text-gray-900 dark:text-white">
-            <%= number_to_currency(investment.average_buy_price) %>
-          </p>
-        </div>
-        <div>
-          <p class="text-sm text-gray-500 dark:text-gray-400">Sell Price</p>
-          <p class="text-lg font-semibold text-gray-900 dark:text-white">
-            <%= number_to_currency(investment.average_sell_price) %>
-          </p>
-        </div>
+      <div class="px-4 py-5 bg-gray-50 shadow rounded-lg overflow-hidden sm:p-6 dark:bg-gray-700">
+        <dt class="text-sm font-medium text-gray-500 truncate dark:text-gray-400">
+          Total Value
+        </dt>
+        <dd class="mt-1 text-3xl font-semibold text-gray-900 dark:text-white">
+          <%= number_to_currency(investment.current_units * investment.current_unit_price) if investment.current_units && investment.current_unit_price %>
+        </dd>
       </div>
-    </div>
 
-    <div class="p-4 bg-white rounded-lg shadow dark:bg-gray-800">
-      <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400">Units</h4>
-      <div class="mt-4 space-y-3">
-        <div>
-          <p class="text-sm text-gray-500 dark:text-gray-400">Total Bought</p>
-          <p class="text-lg font-semibold text-gray-900 dark:text-white">
-            <%= number_with_delimiter(investment.total_bought_units) %>
-          </p>
-        </div>
-        <div>
-          <p class="text-sm text-gray-500 dark:text-gray-400">Total Sold</p>
-          <p class="text-lg font-semibold text-gray-900 dark:text-white">
-            <%= number_with_delimiter(investment.total_sold_units) %>
-          </p>
-        </div>
+      <div class="px-4 py-5 bg-gray-50 shadow rounded-lg overflow-hidden sm:p-6 dark:bg-gray-700">
+        <dt class="text-sm font-medium text-gray-500 truncate dark:text-gray-400">
+          Return
+        </dt>
+        <dd class="mt-1 text-3xl font-semibold text-gray-900 dark:text-white">
+          <% if investment.total_return.present? %>
+            <span class="<%= investment.total_return >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400' %>">
+              <%= number_to_percentage(investment.total_return * 100, precision: 2) %>
+            </span>
+          <% else %>
+            --
+          <% end %>
+        </dd>
       </div>
-    </div>
-  </div>
-
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-    <div class="p-4 bg-white rounded-lg shadow dark:bg-gray-800">
-      <p class="text-sm text-gray-500 dark:text-gray-400">Current Value</p>
-      <p class="text-2xl font-bold text-gray-900 dark:text-white">
-        <%= number_to_currency(investment.current_value) %>
-      </p>
-    </div>
-    <div class="p-4 bg-white rounded-lg shadow dark:bg-gray-800">
-      <p class="text-sm text-gray-500 dark:text-gray-400">Total Cost</p>
-      <p class="text-2xl font-bold text-gray-900 dark:text-white">
-        <%= number_to_currency(investment.total_cost) %>
-      </p>
-    </div>
-    <div class="p-4 bg-white rounded-lg shadow dark:bg-gray-800">
-      <p class="text-sm text-gray-500 dark:text-gray-400">Holding Period</p>
-      <p class="text-2xl font-bold text-gray-900 dark:text-white">
-        <%= pluralize(investment.holding_period, "day") %>
-      </p>
-    </div>
+    </dl>
   </div>
 </div>

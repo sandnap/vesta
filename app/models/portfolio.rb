@@ -1,17 +1,67 @@
 class Portfolio < ApplicationRecord
   belongs_to :user
   has_many :investments, dependent: :destroy
-  has_many :transactions, through: :investments
   has_many :notes, as: :notable, dependent: :destroy
+  has_many :transactions, through: :investments
 
-  validates :name, presence: true, uniqueness: { scope: :user_id, message: "has already been used for another portfolio" }
+  validates :name, presence: true
+
+  def allocation_data
+    # Only include investments with positive value
+    valid_investments = investments.select { |i| i.current_value.to_f > 0 }
+
+    # Return empty data if no valid investments
+    return { labels: [], values: [] } if valid_investments.empty?
+
+    # Calculate total portfolio value for percentage calculation
+    total_value = valid_investments.sum(&:current_value)
+
+    # Map investments to data points
+    investment_data = valid_investments.map do |investment|
+      {
+        label: "#{investment.name} (#{number_to_percentage((investment.current_value / total_value) * 100, precision: 1)})",
+        value: investment.current_value.to_f
+      }
+    end
+
+    # Sort by value descending
+    investment_data.sort_by! { |d| -d[:value] }
+
+    {
+      labels: investment_data.map { |d| d[:label] },
+      values: investment_data.map { |d| d[:value] }
+    }
+  end
+
+  def performance_data(days = 30)
+    start_date = days.days.ago.beginning_of_day
+    dates = (start_date.to_date..Date.current).to_a
+
+    # Get all transactions within the date range
+    relevant_transactions = transactions
+      .where("transaction_date >= ?", start_date)
+      .order(transaction_date: :asc)
+
+    # Calculate portfolio value for each date
+    data_points = dates.map do |date|
+      value = investments.sum do |investment|
+        investment.calculate_value_at_date(date)
+      end
+      [ date, value ]
+    end
+
+    {
+      labels: data_points.map { |date, _| date.strftime("%Y-%m-%d") },
+      values: data_points.map { |_, value| value }
+    }
+  end
 
   def total_value
     investments.sum(&:current_value)
   end
 
   def total_cost
-    transactions.where(transaction_type: "buy").sum("unit_price * units")
+    investments.sum(&:total_cost)
   end
 
   def total_return
@@ -19,13 +69,26 @@ class Portfolio < ApplicationRecord
     (total_value - total_cost) / total_cost
   end
 
-  def calculate_value_at_date(date)
-    transactions.where("transaction_date <= ?", date).sum do |t|
-      if t.transaction_type == "buy"
-        t.unit_price * t.units
-      else
-        -(t.unit_price * t.units)
-      end
-    end
+  def total_return_value
+    total_value - total_cost
+  end
+
+  def realized_gain_loss
+    investments.sum(&:realized_gain_loss)
+  end
+
+  def unrealized_gain_loss
+    investments.sum(&:unrealized_gain_loss)
+  end
+
+  def total_gain_loss
+    realized_gain_loss + unrealized_gain_loss
+  end
+
+  private
+
+  def number_to_percentage(number, options = {})
+    precision = options.fetch(:precision, 1)
+    "#{number.round(precision)}%"
   end
 end

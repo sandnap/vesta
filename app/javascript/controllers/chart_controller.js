@@ -1,128 +1,107 @@
 import { Controller } from "@hotwired/stimulus"
 // Connects to data-controller="chart"
 export default class extends Controller {
-  static targets = ["allocation", "performance"]
+  static targets = ["canvas"]
   static values = {
-    portfolioData: Object,
-    performanceData: Object,
+    chartType: String,
+    data: Object,
   }
 
   connect() {
-    if (this.hasAllocationTarget) {
-      this.initializeAllocationChart()
-    }
-    if (this.hasPerformanceTarget) {
-      this.initializePerformanceChart()
-    }
+    this.initializeChart()
   }
 
-  initializeAllocationChart() {
-    const ctx = this.allocationTarget.getContext("2d")
-    const { labels, data, colors } = this.portfolioDataValue
+  initializeChart() {
+    const isDarkMode = document.documentElement.classList.contains("dark")
+    const textColor = isDarkMode ? "#9ca3af" : "#374151"
+    const gridColor = isDarkMode ? "#374151" : "#e5e7eb"
 
-    new Chart(ctx, {
-      type: "doughnut",
-      data: {
-        labels: labels,
+    const config = {
+      type: this.chartTypeValue,
+      data: this.chartData,
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            labels: {
+              color: textColor,
+            },
+          },
+        },
+        scales:
+          this.chartTypeValue === "line"
+            ? {
+                x: {
+                  grid: {
+                    color: gridColor,
+                  },
+                  ticks: {
+                    color: textColor,
+                  },
+                },
+                y: {
+                  grid: {
+                    color: gridColor,
+                  },
+                  ticks: {
+                    color: textColor,
+                    callback: function (value) {
+                      return new Intl.NumberFormat("en-US", {
+                        style: "currency",
+                        currency: "USD",
+                      }).format(value)
+                    },
+                  },
+                },
+              }
+            : undefined,
+      },
+    }
+
+    new Chart(this.canvasTarget, config)
+  }
+
+  get chartData() {
+    const data = this.dataValue
+
+    if (this.chartTypeValue === "doughnut") {
+      return {
+        labels: data.labels,
         datasets: [
           {
-            data: data,
-            backgroundColor: colors,
+            data: data.values,
+            backgroundColor: this.generateColors(data.labels.length),
             borderWidth: 1,
           },
         ],
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: {
-            position: "bottom",
-            labels: {
-              color: this.isDarkMode() ? "rgb(156, 163, 175)" : "rgb(55, 65, 81)",
-            },
-          },
-          title: {
-            display: true,
-            text: "Portfolio Allocation",
-            color: this.isDarkMode() ? "rgb(255, 255, 255)" : "rgb(17, 24, 39)",
-            font: {
-              size: 16,
-            },
-          },
-        },
-      },
-    })
-  }
+      }
+    }
 
-  initializePerformanceChart() {
-    const ctx = this.performanceTarget.getContext("2d")
-    const { labels, values } = this.performanceDataValue
-
-    new Chart(ctx, {
-      type: "line",
-      data: {
-        labels: labels,
+    if (this.chartTypeValue === "line") {
+      const isDarkMode = document.documentElement.classList.contains("dark")
+      return {
+        labels: data.labels,
         datasets: [
           {
-            label: "Value",
-            data: values,
-            borderColor: "rgb(59, 130, 246)",
-            tension: 0.1,
-            fill: {
-              target: "origin",
-              above: "rgba(59, 130, 246, 0.1)",
-            },
+            label: "Portfolio Value",
+            data: data.values,
+            borderColor: "#3b82f6",
+            backgroundColor: isDarkMode ? "rgba(59, 130, 246, 0.2)" : "rgba(59, 130, 246, 0.1)",
+            fill: true,
+            tension: 0.4,
           },
         ],
-      },
-      options: {
-        responsive: true,
-        scales: {
-          x: {
-            grid: {
-              color: this.isDarkMode() ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.1)",
-            },
-            ticks: {
-              color: this.isDarkMode() ? "rgb(156, 163, 175)" : "rgb(55, 65, 81)",
-              maxRotation: 45,
-              minRotation: 45,
-            },
-          },
-          y: {
-            grid: {
-              color: this.isDarkMode() ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.1)",
-            },
-            ticks: {
-              color: this.isDarkMode() ? "rgb(156, 163, 175)" : "rgb(55, 65, 81)",
-              callback: (value) => {
-                return new Intl.NumberFormat("en-US", {
-                  style: "currency",
-                  currency: "USD",
-                }).format(value)
-              },
-            },
-          },
-        },
-        plugins: {
-          legend: {
-            labels: {
-              color: this.isDarkMode() ? "rgb(156, 163, 175)" : "rgb(55, 65, 81)",
-            },
-          },
-          title: {
-            display: true,
-            text: "Performance History",
-            color: this.isDarkMode() ? "rgb(255, 255, 255)" : "rgb(17, 24, 39)",
-            font: {
-              size: 16,
-            },
-          },
-        },
-      },
-    })
+      }
+    }
   }
 
-  isDarkMode() {
-    return document.documentElement.classList.contains("dark")
+  generateColors(count) {
+    const colors = []
+    for (let i = 0; i < count; i++) {
+      const hue = ((i * 360) / count) % 360
+      colors.push(`hsl(${hue}, 70%, 50%)`)
+    }
+    return colors
   }
 }

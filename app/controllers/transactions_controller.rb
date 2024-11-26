@@ -26,26 +26,24 @@ class TransactionsController < ApplicationController
     @transaction = if params[:investment_id]
       @investment = @portfolio.investments.find(params[:investment_id])
       @investment.transactions.build(transaction_params)
-      respond_to do |format|
-        format.html { redirect_to portfolio_investment_path(@portfolio, @investment), notice: "Transaction was successfully created." }
-        format.turbo_stream do
-          render turbo_stream: [
-            turbo_stream.update("modal", ""),
-            turbo_stream.replace("transactions_table",
-              partial: "transactions/transactions",
-              locals: { portfolio: @portfolio, investment: @investment, transactions: @investment.transactions }
-            )
-          ]
-        end
-      end
     else
       @investment = @portfolio.investments.find(transaction_params[:investment_id])
       @investment.transactions.build(transaction_params)
     end
 
     if @transaction.save
-      redirect_to params[:investment_id] ? portfolio_investment_path(@portfolio, @investment) : portfolio_path(@portfolio),
-                  notice: "Transaction was successfully created."
+      respond_to do |format|
+        format.html { redirect_to portfolio_investment_path(@portfolio, @investment), notice: "Transaction was successfully created." }
+        format.turbo_stream do
+          render turbo_stream: [
+            turbo_stream.update("modal", ""),
+            turbo_stream.replace("transactions_table",
+              partial: "investments/transactions",
+              locals: { portfolio: @portfolio, investment: @investment, transactions: @investment.transactions }
+            )
+          ]
+        end
+      end
     else
       render :new, status: :unprocessable_entity
     end

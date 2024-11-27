@@ -8,7 +8,7 @@ class InvestmentsController < ApplicationController
 
   def show
     @transactions = @investment.transactions.order(transaction_date: :desc)
-    @notes = @investment.notes.order(created_at: :desc)
+    @notes = @investment.notes.order(importance: :asc, created_at: :desc)
   end
 
   def new

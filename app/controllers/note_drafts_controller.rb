@@ -40,11 +40,11 @@ class NoteDraftsController < ApplicationController
   private
 
   def set_notable
-    if params[:portfolio_id].present?
-      @notable = Current.user.portfolios.find(params[:portfolio_id])
-    elsif params[:investment_id].present?
+    if params[:investment_id].present?
       portfolio = Current.user.portfolios.find(params[:portfolio_id])
       @notable = portfolio.investments.find(params[:investment_id])
+    elsif params[:portfolio_id].present?
+      @notable = Current.user.portfolios.find(params[:portfolio_id])
     end
   end
 

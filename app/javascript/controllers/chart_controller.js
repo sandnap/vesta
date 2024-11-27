@@ -9,9 +9,6 @@ export default class extends Controller {
   }
 
   connect() {
-    console.log("Chart controller connected")
-    console.log("Chart type:", this.chartTypeValue)
-    console.log("Chart data:", this.dataValue)
     this.initializeChart()
   }
 
@@ -81,13 +78,11 @@ export default class extends Controller {
       },
     }
 
-    console.log("Chart config:", config)
     new Chart(this.canvasTarget, config)
   }
 
   get chartData() {
     const data = this.dataValue
-    console.log("Processing chart data:", data)
 
     if (this.chartTypeValue === "doughnut") {
       const chartData = {
@@ -101,7 +96,6 @@ export default class extends Controller {
           },
         ],
       }
-      console.log("Doughnut chart data:", chartData)
       return chartData
     }
 
@@ -138,7 +132,6 @@ export default class extends Controller {
       }
     }
 
-    console.log("Generated colors:", colors)
     return colors
   }
 }

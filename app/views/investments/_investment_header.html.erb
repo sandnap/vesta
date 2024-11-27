@@ -2,6 +2,12 @@
   <div class="container mx-auto px-4 py-6">
     <div class="flex items-center justify-between">
       <div>
+        <%= link_to portfolio_path(portfolio), class: "flex items-center space-x-2 text-gray-900 hover:text-gray-700 dark:text-white dark:hover:text-gray-300 mb-4" do %>
+          <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+          </svg>
+          <span>Back to Portfolio</span>
+        <% end %>
         <h1 class="text-3xl font-bold text-gray-900 dark:text-white"><%= investment.name %></h1>
         <div class="mt-2 flex items-center space-x-4">
           <span class="text-sm text-gray-500 dark:text-gray-400">

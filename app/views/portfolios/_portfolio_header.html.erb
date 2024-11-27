@@ -2,7 +2,7 @@
   <div class="px-4 py-5 sm:px-6">
     <div class="flex items-center justify-between">
       <div>
-        <h2 class="text-xl font-semibold leading-6 text-gray-900 dark:text-white"><%= portfolio.name %></h2>
+        <%= render "portfolio_header_tag", portfolio: portfolio %>
         <p class="mt-1 max-w-2xl text-sm text-gray-500 dark:text-gray-400">
           Created <%= time_ago_in_words(portfolio.created_at) %> ago
         </p>

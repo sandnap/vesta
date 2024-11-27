@@ -23,4 +23,8 @@ export default class extends Controller {
       window.history.back()
     }
   }
+
+  close() {
+    Turbo.visit(window.location.href, { action: "replace" })
+  }
 }

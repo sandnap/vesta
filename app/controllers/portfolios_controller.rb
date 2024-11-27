@@ -7,7 +7,7 @@ class PortfoliosController < ApplicationController
 
   def show
     @investments = @portfolio.investments.includes(:transactions).order(:name)
-    @notes = @portfolio.notes.order(created_at: :desc)
+    @notes = @portfolio.notes.order(importance: :asc, created_at: :desc)
   end
 
   def new
@@ -29,7 +29,18 @@ class PortfoliosController < ApplicationController
 
   def update
     if @portfolio.update(portfolio_params)
-      redirect_to @portfolio, notice: "Portfolio was successfully updated."
+      respond_to do |format|
+        format.html { redirect_to @portfolio, notice: "Portfolio was successfully updated." }
+        format.turbo_stream {
+          render turbo_stream: [
+            turbo_stream.update("modal", ""),
+            turbo_stream.replace("portfolio_#{@portfolio.id}",
+              partial: "portfolios/portfolio_header_tag",
+              locals: { portfolio: @portfolio }
+            )
+          ]
+        }
+      end
     else
       render :edit, status: :unprocessable_entity
     end

@@ -1,6 +1,6 @@
 class TransactionsController < ApplicationController
   before_action :set_portfolio
-  before_action :set_investment, except: [ :new, :create ]
+  before_action :set_investment, only: [ :index, :edit, :update, :destroy ]
   before_action :set_transaction, only: [ :edit, :update, :destroy ]
 
   def index
@@ -15,9 +15,12 @@ class TransactionsController < ApplicationController
 
   def new
     @transaction = if params[:investment_id]
+      # We are on the investment page so we know the investment
       @investment = @portfolio.investments.find(params[:investment_id])
       @investment.transactions.build
     else
+      # From the portfolio page
+      @investment = nil
       Transaction.new
     end
   end
@@ -40,6 +43,10 @@ class TransactionsController < ApplicationController
             turbo_stream.replace("transactions_table",
               partial: "investments/transactions",
               locals: { portfolio: @portfolio, investment: @investment, transactions: @investment.transactions }
+            ),
+            turbo_stream.replace("investment_performance",
+              partial: "investments/performance",
+              locals: { investment: @investment }
             )
           ]
         end
@@ -62,6 +69,10 @@ class TransactionsController < ApplicationController
             turbo_stream.replace("transactions_table",
               partial: "investments/transactions",
               locals: { portfolio: @portfolio, investment: @investment, transactions: @investment.transactions }
+            ),
+            turbo_stream.replace("investment_performance",
+              partial: "investments/performance",
+              locals: { investment: @investment }
             )
           ]
         end
@@ -73,8 +84,22 @@ class TransactionsController < ApplicationController
 
   def destroy
     @transaction.destroy
-    redirect_to portfolio_investment_path(@portfolio, @investment),
-                notice: "Transaction was successfully deleted."
+    respond_to do |format|
+      format.html { redirect_to portfolio_investment_path(@portfolio, @investment), notice: "Transaction was successfully deleted." }
+      format.turbo_stream do
+        render turbo_stream: [
+          turbo_stream.update("modal", ""),
+          turbo_stream.replace("transactions_table",
+            partial: "investments/transactions",
+            locals: { portfolio: @portfolio, investment: @investment, transactions: @investment.transactions }
+          ),
+          turbo_stream.replace("investment_performance",
+            partial: "investments/performance",
+            locals: { investment: @investment }
+          )
+        ]
+      end
+    end
   end
 
   def export
@@ -92,19 +117,19 @@ class TransactionsController < ApplicationController
 
   private
 
-  def set_portfolio
-    @portfolio = Current.user.portfolios.find(params[:portfolio_id])
-  end
+    def set_portfolio
+      @portfolio = Current.user.portfolios.find(params[:portfolio_id])
+    end
 
-  def set_investment
-    @investment = @portfolio.investments.find(params[:investment_id])
-  end
+    def set_investment
+      @investment = @portfolio.investments.find(params[:investment_id])
+    end
 
-  def set_transaction
-    @transaction = @investment.transactions.find(params[:id])
-  end
+    def set_transaction
+      @transaction = @investment.transactions.find(params[:id])
+    end
 
-  def transaction_params
-    params.require(:transaction).permit(:transaction_date, :transaction_type, :units, :unit_price, :investment_id)
-  end
+    def transaction_params
+      params.require(:transaction).permit(:transaction_date, :transaction_type, :units, :unit_price, :investment_id, :id)
+    end
 end

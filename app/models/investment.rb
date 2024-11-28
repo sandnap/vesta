@@ -5,7 +5,6 @@ class Investment < ApplicationRecord
 
   validates :name, presence: true
   validates :current_unit_price, numericality: { greater_than_or_equal_to: 0, allow_nil: true }
-  validates :current_units, numericality: { allow_nil: true }
 
   attribute :investment_type, :integer
   attribute :status, :integer
@@ -35,8 +34,8 @@ class Investment < ApplicationRecord
   }
 
   def current_value
-    return 0 unless current_units && current_unit_price
-    current_units * current_unit_price
+    return 0 unless total_units && current_unit_price
+    total_units * current_unit_price
   end
 
   def total_units
@@ -85,8 +84,8 @@ class Investment < ApplicationRecord
   end
 
   def unrealized_gain_loss
-    return 0 unless current_units && current_unit_price
-    current_value - (average_buy_price * current_units)
+    return 0 unless total_units && current_unit_price
+    current_value - (average_buy_price * total_units)
   end
 
   def total_gain_loss
@@ -121,7 +120,7 @@ class Investment < ApplicationRecord
       .map { |t| [ t.transaction_date.to_date, calculate_value_at_date(t.transaction_date) ] }
 
     # Add current value if we have one
-    if current_units && current_unit_price
+    if total_units && current_unit_price
       today = Date.current
       data_points << [ today, current_value ] unless data_points.any? { |date, _| date == today }
     end

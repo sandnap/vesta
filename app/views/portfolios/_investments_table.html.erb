@@ -26,10 +26,10 @@
               </td>
               <td class="px-6 py-4"><%= investment.investment_type&.titleize || 'Not Set' %></td>
               <td class="px-6 py-4"><%= investment.status&.titleize || 'Not Set' %></td>
-              <td class="px-6 py-4"><%= number_with_delimiter(investment.current_units) %></td>
+              <td class="px-6 py-4"><%= number_with_delimiter(investment.total_units) %></td>
               <td class="px-6 py-4"><%= number_to_currency(investment.current_unit_price) %></td>
               <td class="px-6 py-4">
-                <%= number_to_currency(investment.current_units * investment.current_unit_price) if investment.current_units && investment.current_unit_price %>
+                <%= number_to_currency(investment.total_units * investment.current_unit_price) if investment.total_units && investment.current_unit_price %>
               </td>
               <td class="px-6 py-4">
                 <div class="flex items-center space-x-2">
@@ -65,4 +65,5 @@
       <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Get started by creating a new investment.</p>
     </div>
   <% end %>
-</div> 
+</div>
+ 

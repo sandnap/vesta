@@ -1,4 +1,4 @@
-<%= form_with(model: [portfolio, investment, transaction], class: "space-y-4", data: { controller: "transaction", current_price: investment.current_unit_price }) do |form| %>
+<%= form_with(model: [portfolio, investment, transaction], class: "space-y-4", data: { controller: "transaction", current_price: investment&.current_unit_price }) do |form| %>
   <% if transaction.errors.any? %>
     <div class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
       <h2><%= pluralize(transaction.errors.count, "error") %> prohibited this transaction from being saved:</h2>
@@ -8,6 +8,20 @@
         <% end %>
       </ul>
     </div>
+  <% end %>
+
+  <% if investment.nil? %>
+    <div>
+      <%= form.label :investment_id, class: "block mb-2 text-sm font-medium text-gray-900 dark:text-white" %>
+      <%= form.select :investment_id,
+        portfolio.investments.map { |investment| [investment.name, investment.id, data: { current_price: "#{investment.current_unit_price}" }] },
+        { prompt: "Select investment" },
+        data: { transaction_target: "currentPrice" },
+         class: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
+      %>
+    </div>
+  <% else %>
+    <%= form.hidden_field :investment_id, data: { current_price: "#{investment.current_unit_price}", transaction_target: "currentPrice" } %>
   <% end %>
 
   <div>
@@ -45,10 +59,7 @@
     <%= form.label :unit_price, class: "block mb-2 text-sm font-medium text-gray-900 dark:text-white" %>
     <div class="flex items-center space-x-2">
       <div class="relative flex-1">
-        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-          <span class="text-gray-500 dark:text-gray-400">$</span>
-        </div>
-        <%= form.number_field :unit_price, step: :any, class: "pl-7 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500", placeholder: "0.00", data: { transaction_target: "unitPrice", action: "input->transaction#validateUnitPrice" } %>
+        <%= form.number_field :unit_price, step: :any, class: "pl-7 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500", placeholder: "$0.00", data: { transaction_target: "unitPrice", action: "input->transaction#validateUnitPrice" } %>
       </div>
       <button type="button" data-action="transaction#updateCurrentPrice" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">
         Use Current Price

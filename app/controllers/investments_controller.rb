@@ -54,15 +54,15 @@ class InvestmentsController < ApplicationController
 
   private
 
-  def set_portfolio
-    @portfolio = Current.user.portfolios.find(params[:portfolio_id])
-  end
+    def set_portfolio
+      @portfolio = Current.user.portfolios.find(params[:portfolio_id])
+    end
 
-  def set_investment
-    @investment = @portfolio.investments.find(params[:id])
-  end
+    def set_investment
+      @investment = @portfolio.investments.find(params[:id])
+    end
 
-  def investment_params
-    params.require(:investment).permit(:name, :symbol, :investment_type, :status, :current_units, :current_unit_price, :exit_target_type)
-  end
+    def investment_params
+      params.require(:investment).permit(:name, :symbol, :investment_type, :status, :current_unit_price, :exit_target_type)
+    end
 end

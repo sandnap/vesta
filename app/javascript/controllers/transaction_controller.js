@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 
 // Connects to data-controller="transaction"
 export default class extends Controller {
-  static targets = ["units", "unitPrice", "totalValue", "type"]
+  static targets = ["units", "unitPrice", "totalValue", "type", "currentPrice"]
 
   connect() {
     this.calculateTotal()
@@ -42,8 +42,11 @@ export default class extends Controller {
   }
 
   updateCurrentPrice() {
+    const target = this.currentPriceTarget
+    const selectedOption = target.querySelector(`option[value="${target.value}"]`)
+    const currentPrice = parseFloat(selectedOption ? selectedOption.dataset.currentPrice : target.dataset.currentPrice)
     if (this.hasUnitPriceTarget) {
-      this.unitPriceTarget.value = this.element.dataset.currentPrice
+      this.unitPriceTarget.value = currentPrice
       this.calculateTotal()
     }
   }

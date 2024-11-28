@@ -1,8 +1,8 @@
 class PortfoliosController < ApplicationController
   before_action :set_portfolio, only: [ :show, :edit, :update, :destroy ]
+  before_action :set_portfolios, only: [ :index, :create, :destroy ]
 
   def index
-    @portfolios = Current.user.portfolios.includes(:investments)
   end
 
   def show
@@ -18,7 +18,21 @@ class PortfoliosController < ApplicationController
     @portfolio = Current.user.portfolios.build(portfolio_params)
 
     if @portfolio.save
-      redirect_to @portfolio, notice: "Portfolio was successfully created."
+      respond_to do |format|
+        format.html { redirect_to @portfolio, notice: "Portfolio was successfully created." }
+        format.turbo_stream {
+          render turbo_stream: [
+            turbo_stream.update("modal", ""),
+            turbo_stream.replace("portfolios",
+              partial: "portfolios/portfolios",
+              locals: { portfolios: @portfolios }
+            ),
+            turbo_stream.replace("portfolio_select",
+              partial: "shared/portfolio_select",
+            )
+          ]
+        }
+      end
     else
       render :new, status: :unprocessable_entity
     end
@@ -48,16 +62,33 @@ class PortfoliosController < ApplicationController
 
   def destroy
     @portfolio.destroy
-    redirect_to portfolios_url, notice: "Portfolio was successfully deleted."
+    respond_to do |format|
+      format.turbo_stream {
+        render turbo_stream: [
+          turbo_stream.update("modal", ""),
+          turbo_stream.replace("portfolios",
+            partial: "portfolios/portfolios",
+            locals: { portfolios: @portfolios }
+          ),
+          turbo_stream.replace("portfolio_select",
+            partial: "shared/portfolio_select",
+          )
+        ]
+      }
+    end
   end
 
   private
 
-  def set_portfolio
-    @portfolio = Current.user.portfolios.find(params[:id])
-  end
+    def set_portfolios
+      @portfolios = Current.user.portfolios.includes(:investments)
+    end
 
-  def portfolio_params
-    params.require(:portfolio).permit(:name)
-  end
+    def set_portfolio
+      @portfolio = Current.user.portfolios.find(params[:id])
+    end
+
+    def portfolio_params
+      params.require(:portfolio).permit(:name)
+    end
 end

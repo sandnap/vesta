@@ -14,9 +14,9 @@ export default class extends Controller {
   handleChange(event) {
     const portfolioId = event.target.value
     if (portfolioId) {
-      Turbo.visit(`/portfolios/${portfolioId}`, { action: "replace" })
+      Turbo.visit(`/portfolios/${portfolioId}`, { action: "advance" })
     } else {
-      Turbo.visit("/portfolios", { action: "replace" })
+      Turbo.visit("/portfolios", { action: "advance" })
     }
   }
 }

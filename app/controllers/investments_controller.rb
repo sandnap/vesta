@@ -1,10 +1,6 @@
 class InvestmentsController < ApplicationController
   before_action :set_portfolio
-  before_action :set_investment, only: [ :show, :edit, :update, :destroy ]
-
-  def index
-    @investments = @portfolio.investments.order(:name)
-  end
+  before_action :set_investment, except: [ :new, :create ]
 
   def show
     @transactions = @investment.transactions.order(transaction_date: :desc)
@@ -34,6 +30,7 @@ class InvestmentsController < ApplicationController
         format.html { redirect_to portfolio_path(@portfolio), notice: "Investment was successfully updated." }
         format.turbo_stream {
           render turbo_stream: [
+            turbo_stream.prepend("content", partial: "shared/flash", locals: { flash: [ [ "notice", "Investment was successfully updated." ] ] }),
             turbo_stream.update("modal", ""),
             turbo_stream.replace("investments_table",
               partial: "portfolios/investments_table",

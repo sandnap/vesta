@@ -21,16 +21,7 @@ class PortfoliosController < ApplicationController
       respond_to do |format|
         format.html { redirect_to @portfolio, notice: "Portfolio was successfully created." }
         format.turbo_stream {
-          render turbo_stream: [
-            turbo_stream.update("modal", ""),
-            turbo_stream.replace("portfolios",
-              partial: "portfolios/portfolios",
-              locals: { portfolios: @portfolios }
-            ),
-            turbo_stream.replace("portfolio_select",
-              partial: "shared/portfolio_select",
-            )
-          ]
+          replace_create_destroy_turbo_stream("Portfolio was successfully created.")
         }
       end
     else
@@ -47,6 +38,7 @@ class PortfoliosController < ApplicationController
         format.html { redirect_to @portfolio, notice: "Portfolio was successfully updated." }
         format.turbo_stream {
           render turbo_stream: [
+            turbo_stream.prepend("content", partial: "shared/flash", locals: { flash: [ [ "notice", "Potfolio was successfully updated." ] ] }),
             turbo_stream.update("modal", ""),
             turbo_stream.replace("portfolio_#{@portfolio.id}",
               partial: "portfolios/portfolio_header_tag",
@@ -64,21 +56,27 @@ class PortfoliosController < ApplicationController
     @portfolio.destroy
     respond_to do |format|
       format.turbo_stream {
-        render turbo_stream: [
-          turbo_stream.update("modal", ""),
-          turbo_stream.replace("portfolios",
-            partial: "portfolios/portfolios",
-            locals: { portfolios: @portfolios }
-          ),
-          turbo_stream.replace("portfolio_select",
-            partial: "shared/portfolio_select",
-          )
-        ]
+        replace_create_destroy_turbo_stream("Portfolio was successfully deleted.")
       }
     end
   end
 
   private
+
+    def replace_create_destroy_turbo_stream(message)
+      render turbo_stream: [
+        turbo_stream.prepend("content", partial: "shared/flash", locals: { flash: [ [ "notice", message ] ] }),
+        turbo_stream.update("modal", ""),
+        turbo_stream.replace("portfolios",
+          partial: "portfolios/portfolios",
+          locals: { portfolios: @portfolios }
+        ),
+        turbo_stream.replace("portfolio_select",
+          partial: "shared/portfolio_select",
+        )
+      ]
+    end
+
 
     def set_portfolios
       @portfolios = Current.user.portfolios.includes(:investments)

@@ -38,17 +38,7 @@ class TransactionsController < ApplicationController
       respond_to do |format|
         format.html { redirect_to portfolio_investment_path(@portfolio, @investment), notice: "Transaction was successfully created." }
         format.turbo_stream do
-          render turbo_stream: [
-            turbo_stream.update("modal", ""),
-            turbo_stream.replace("transactions_table",
-              partial: "investments/transactions",
-              locals: { portfolio: @portfolio, investment: @investment, transactions: @investment.transactions }
-            ),
-            turbo_stream.replace("investment_performance",
-              partial: "investments/performance",
-              locals: { investment: @investment }
-            )
-          ]
+          replace_turbo_stream("Transaction was successfully created.")
         end
       end
     else
@@ -64,17 +54,7 @@ class TransactionsController < ApplicationController
       respond_to do |format|
         format.html { redirect_to portfolio_investment_path(@portfolio, @investment), notice: "Transaction was successfully updated." }
         format.turbo_stream do
-          render turbo_stream: [
-            turbo_stream.update("modal", ""),
-            turbo_stream.replace("transactions_table",
-              partial: "investments/transactions",
-              locals: { portfolio: @portfolio, investment: @investment, transactions: @investment.transactions }
-            ),
-            turbo_stream.replace("investment_performance",
-              partial: "investments/performance",
-              locals: { investment: @investment }
-            )
-          ]
+          replace_turbo_stream("Transaction was successfully updated.")
         end
       end
     else
@@ -87,17 +67,7 @@ class TransactionsController < ApplicationController
     respond_to do |format|
       format.html { redirect_to portfolio_investment_path(@portfolio, @investment), notice: "Transaction was successfully deleted." }
       format.turbo_stream do
-        render turbo_stream: [
-          turbo_stream.update("modal", ""),
-          turbo_stream.replace("transactions_table",
-            partial: "investments/transactions",
-            locals: { portfolio: @portfolio, investment: @investment, transactions: @investment.transactions }
-          ),
-          turbo_stream.replace("investment_performance",
-            partial: "investments/performance",
-            locals: { investment: @investment }
-          )
-        ]
+        replace_turbo_stream("Transaction was successfully deleted.")
       end
     end
   end
@@ -116,6 +86,21 @@ class TransactionsController < ApplicationController
   end
 
   private
+
+    def replace_turbo_stream(message)
+      render turbo_stream: [
+        turbo_stream.prepend("content", partial: "shared/flash", locals: { flash: [ [ "notice", message ] ] }),
+        turbo_stream.update("modal", ""),
+        turbo_stream.replace("transactions_table",
+          partial: "investments/transactions",
+          locals: { portfolio: @portfolio, investment: @investment, transactions: @investment.transactions }
+        ),
+        turbo_stream.replace("investment_performance",
+          partial: "investments/performance",
+          locals: { investment: @investment }
+        )
+      ]
+    end
 
     def set_portfolio
       @portfolio = Current.user.portfolios.find(params[:portfolio_id])

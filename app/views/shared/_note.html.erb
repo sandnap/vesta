@@ -1,0 +1,14 @@
+<div class="p-4 bg-white rounded-lg shadow dark:bg-gray-800">
+  <div class="flex items-center justify-between mb-2">
+    <div class="flex items-center space-x-2">
+      <span class="px-2.5 py-0.5 text-xs font-medium <%= note_importance_class(note) %> rounded">
+        <%= note.importance %>
+      </span>
+      <span class="text-sm text-gray-500 dark:text-gray-400">
+        <%= time_ago_in_words(note.created_at) %> ago
+      </span>
+    </div>
+    <%= yield %>
+  </div>
+  <p class="text-gray-900 dark:text-white whitespace-pre-wrap"><%= note.content %></p>
+</div>

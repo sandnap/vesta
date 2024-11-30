@@ -1,13 +1,13 @@
-<div class="bg-white shadow rounded-lg dark:bg-gray-800">
+<div id="investment_performance" class="bg-white shadow rounded-lg dark:bg-gray-800">
   <div class="p-6">
     <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Performance Metrics</h2>
     <dl class="grid grid-cols-1 gap-5 sm:grid-cols-4">
       <div class="px-4 py-5 bg-gray-50 shadow rounded-lg overflow-hidden sm:p-6 dark:bg-gray-700">
         <dt class="text-sm font-medium text-gray-500 truncate dark:text-gray-400">
-          Current Units
+          Total Units
         </dt>
         <dd class="mt-1 text-3xl font-semibold text-gray-900 dark:text-white">
-          <%= number_with_delimiter(investment.current_units) %>
+          <%= number_with_delimiter(investment.total_units) %>
         </dd>
       </div>
 
@@ -25,7 +25,7 @@
           Total Value
         </dt>
         <dd class="mt-1 text-3xl font-semibold text-gray-900 dark:text-white">
-          <%= number_to_currency(investment.current_units * investment.current_unit_price) if investment.current_units && investment.current_unit_price %>
+          <%= number_to_currency(investment.total_units * investment.current_unit_price) if investment.total_units && investment.current_unit_price %>
         </dd>
       </div>
 

@@ -1,4 +1,4 @@
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div id="analytics" class="grid grid-cols-1 md:grid-cols-2 gap-4">
   <div class="bg-white shadow rounded-lg dark:bg-gray-800 p-4">
     <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Portfolio Allocation</h3>
     <div class="h-64" data-controller="chart" data-chart-chart-type-value="doughnut" data-chart-data-value="<%= @portfolio.allocation_data.to_json %>">

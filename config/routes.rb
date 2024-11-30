@@ -7,7 +7,7 @@ Rails.application.routes.draw do
   resources :portfolios do
     resource :note_draft, only: [ :show, :create, :update, :destroy ]
     resources :transactions, only: [ :new, :create ]
-    resources :investments do
+    resources :investments, except: [ :index ] do
       resources :transactions do
         collection do
           get :export

@@ -1,10 +1,6 @@
 class InvestmentsController < ApplicationController
   before_action :set_portfolio
-  before_action :set_investment, only: [ :show, :edit, :update, :destroy ]
-
-  def index
-    @investments = @portfolio.investments.order(:name)
-  end
+  before_action :set_investment, except: [ :new, :create ]
 
   def show
     @transactions = @investment.transactions.order(transaction_date: :desc)
@@ -19,7 +15,12 @@ class InvestmentsController < ApplicationController
     @investment = @portfolio.investments.build(investment_params)
 
     if @investment.save
-      redirect_to portfolio_path(@portfolio), notice: "Investment was successfully created."
+      respond_to do |format|
+        format.html { redirect_to portfolio_path(@portfolio), notice: "Investment was successfully created." }
+        format.turbo_stream {
+          render_turbo_stream("Investment was successfully created.")
+        }
+      end
     else
       render :new, status: :unprocessable_entity
     end
@@ -33,13 +34,7 @@ class InvestmentsController < ApplicationController
       respond_to do |format|
         format.html { redirect_to portfolio_path(@portfolio), notice: "Investment was successfully updated." }
         format.turbo_stream {
-          render turbo_stream: [
-            turbo_stream.update("modal", ""),
-            turbo_stream.replace("investments_table",
-              partial: "portfolios/investments_table",
-              locals: { portfolio: @portfolio, investments: @portfolio.investments.order(:name) }
-            )
-          ]
+          render_turbo_stream("Investment was successfully updated.")
         }
       end
     else
@@ -49,20 +44,40 @@ class InvestmentsController < ApplicationController
 
   def destroy
     @investment.destroy
-    redirect_to portfolio_path(@portfolio), notice: "Investment was successfully deleted."
+    respond_to do |format|
+      format.html { redirect_to portfolio_path(@portfolio), notice: "Investment was successfully deleted." }
+      format.turbo_stream {
+        render_turbo_stream("Investment was successfully deleted.")
+      }
+    end
   end
 
   private
 
-  def set_portfolio
-    @portfolio = Current.user.portfolios.find(params[:portfolio_id])
-  end
+    def render_turbo_stream(message)
+      render turbo_stream: [
+        close_modal_turbo_stream,
+        flash_turbo_stream_message("notice", message),
+        turbo_stream.replace("investments_table",
+          partial: "portfolios/investments_table",
+          locals: { portfolio: @portfolio, investments: @portfolio.investments.order(:name) }
+        ),
+        turbo_stream.replace("analytics",
+          partial: "portfolios/analytics",
+          locals: { portfolio: @portfolio }
+        )
+      ]
+    end
 
-  def set_investment
-    @investment = @portfolio.investments.find(params[:id])
-  end
+    def set_portfolio
+      @portfolio = Current.user.portfolios.find(params[:portfolio_id])
+    end
 
-  def investment_params
-    params.require(:investment).permit(:name, :symbol, :investment_type, :status, :current_units, :current_unit_price, :exit_target_type)
-  end
+    def set_investment
+      @investment = @portfolio.investments.find(params[:id])
+    end
+
+    def investment_params
+      params.require(:investment).permit(:name, :symbol, :investment_type, :status, :current_unit_price, :exit_target_type)
+    end
 end

@@ -10,18 +10,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2024_11_25_134732) do
+ActiveRecord::Schema[8.0].define(version: 2024_11_28_020609) do
   create_table "investments", force: :cascade do |t|
     t.string "name", null: false
     t.string "symbol"
     t.string "exit_target_type"
-    t.decimal "current_units", precision: 18, scale: 8
     t.decimal "current_unit_price", precision: 18, scale: 8
     t.integer "portfolio_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["portfolio_id", "name"], name: "index_investments_on_portfolio_id_and_name", unique: true
-    t.index ["portfolio_id", "symbol"], name: "index_investments_on_portfolio_id_and_symbol", unique: true, where: "symbol IS NOT NULL /*application='VestaCursor'*/ /*application='VestaCursor'*/ /*application='VestaCursor'*/ /*application='VestaCursor'*/ /*application='VestaCursor'*/ /*application='VestaCursor'*/ /*application='VestaCursor'*/"
+    t.index ["portfolio_id", "symbol"], name: "index_investments_on_portfolio_id_and_symbol", unique: true, where: "symbol IS NOT NULL /*application='VestaCursor'*/ /*application='VestaCursor'*/ /*application='VestaCursor'*/ /*application='VestaCursor'*/ /*application='VestaCursor'*/ /*application='VestaCursor'*/ /*application='VestaCursor'*/ /*application='VestaCursor'*/ /*application='VestaCursor'*/"
     t.index ["portfolio_id"], name: "index_investments_on_portfolio_id"
   end
 

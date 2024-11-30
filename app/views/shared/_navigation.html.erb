@@ -16,47 +16,48 @@
             Vesta
           </span>
         <% end %>
-        <div class="ml-4" data-controller="portfolio">
-          <label for="portfolio-select" class="sr-only">Select portfolio</label>
-          <select id="portfolio-select" data-portfolio-target="select" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-            <option value="">Select Portfolio</option>
-            <%= options_from_collection_for_select(Current.user.portfolios, :id, :name, params[:id]) %>
-          </select>
-        </div>
-      </div>
-      <div class="flex items-center">
-        <div class="flex items-center ml-3">
-          <div>
-            <button type="button" class="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" aria-expanded="false" data-dropdown-toggle="dropdown-user">
-              <span class="sr-only">Open user menu</span>
-              <img class="w-8 h-8 rounded-full" src="https://api.dicebear.com/6.x/avataaars/svg?seed=<%= Current.user.email_address %>" alt="user photo">
-            </button>
+        <% if authenticated? %>
+          <div class="ml-4">
+            <label for="portfolio-select" class="sr-only">Select portfolio</label>
+            <%= render "shared/portfolio_select" %>
           </div>
-          <div class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded shadow dark:bg-gray-700 dark:divide-gray-600" id="dropdown-user">
-            <div class="px-4 py-3" role="none">
-              <p class="text-sm font-medium text-gray-900 truncate dark:text-gray-300" role="none">
-                <%= Current.user.email_address %>
-              </p>
+        <% end %>
+      </div>
+      <% if authenticated? %>
+        <div class="flex items-center">
+          <div class="flex items-center ml-3">
+            <div>
+              <button type="button" class="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" aria-expanded="false" data-dropdown-toggle="dropdown-user">
+                <span class="sr-only">Open user menu</span>
+                <img class="w-8 h-8 rounded-full" src="https://api.dicebear.com/6.x/avataaars/svg?seed=<%= Current.user.email_address %>" alt="user photo">
+              </button>
             </div>
-            <ul class="py-1" role="none">
-              <li>
-                <button type="button" data-controller="theme" data-action="theme#toggle" class="flex w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">
-                  <svg class="w-5 h-5 mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm0-6a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z" />
-                    <path d="M12 8c-2.2 0-4 1.8-4 4s1.8 4 4 4 4-1.8 4-4-1.8-4-4-4Zm0 6c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2Z" />
-                  </svg>
-                  Toggle theme
-                </button>
-              </li>
-              <li>
-                <%= button_to session_path, method: :delete, class: "block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" do %>
-                  Sign out
-                <% end %>
-              </li>
-            </ul>
+            <div class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded shadow dark:bg-gray-700 dark:divide-gray-600" id="dropdown-user">
+              <div class="px-4 py-3" role="none">
+                <p class="text-sm font-medium text-gray-900 truncate dark:text-gray-300" role="none">
+                  <%= Current.user.email_address %>
+                </p>
+              </div>
+              <ul class="py-1" role="none">
+                <li>
+                  <button type="button" data-controller="theme" data-action="theme#toggle" class="flex w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">
+                    <svg class="w-5 h-5 mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm0-6a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z" />
+                      <path d="M12 8c-2.2 0-4 1.8-4 4s1.8 4 4 4 4-1.8 4-4-1.8-4-4-4Zm0 6c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2Z" />
+                    </svg>
+                    Toggle theme
+                  </button>
+                </li>
+                <li>
+                  <%= button_to session_path, method: :delete, class: "block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" do %>
+                    Sign out
+                  <% end %>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
-      </div>
+      <% end %>
     </div>
   </div>
 </nav>

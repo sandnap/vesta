@@ -1,8 +1,8 @@
 class PortfoliosController < ApplicationController
   before_action :set_portfolio, only: [ :show, :edit, :update, :destroy ]
+  before_action :set_portfolios, only: [ :index, :create, :destroy ]
 
   def index
-    @portfolios = Current.user.portfolios.includes(:investments)
   end
 
   def show
@@ -18,7 +18,12 @@ class PortfoliosController < ApplicationController
     @portfolio = Current.user.portfolios.build(portfolio_params)
 
     if @portfolio.save
-      redirect_to @portfolio, notice: "Portfolio was successfully created."
+      respond_to do |format|
+        format.html { redirect_to @portfolio, notice: "Portfolio was successfully created." }
+        format.turbo_stream {
+          render_create_destroy_turbo_stream("Portfolio was successfully created.")
+        }
+      end
     else
       render :new, status: :unprocessable_entity
     end
@@ -33,7 +38,8 @@ class PortfoliosController < ApplicationController
         format.html { redirect_to @portfolio, notice: "Portfolio was successfully updated." }
         format.turbo_stream {
           render turbo_stream: [
-            turbo_stream.update("modal", ""),
+            close_modal_turbo_stream,
+            flash_turbo_stream_message("notice", "Portfolio was successfully updated."),
             turbo_stream.replace("portfolio_#{@portfolio.id}",
               partial: "portfolios/portfolio_header_tag",
               locals: { portfolio: @portfolio }
@@ -48,16 +54,39 @@ class PortfoliosController < ApplicationController
 
   def destroy
     @portfolio.destroy
-    redirect_to portfolios_url, notice: "Portfolio was successfully deleted."
+    respond_to do |format|
+      format.turbo_stream {
+        render_create_destroy_turbo_stream("Portfolio was successfully deleted.")
+      }
+    end
   end
 
   private
 
-  def set_portfolio
-    @portfolio = Current.user.portfolios.find(params[:id])
-  end
+    def render_create_destroy_turbo_stream(message)
+      render turbo_stream: [
+        close_modal_turbo_stream,
+        flash_turbo_stream_message("notice", message),
+        turbo_stream.replace("portfolios",
+          partial: "portfolios/portfolios",
+          locals: { portfolios: @portfolios }
+        ),
+        turbo_stream.replace("portfolio_select",
+          partial: "shared/portfolio_select",
+        )
+      ]
+    end
 
-  def portfolio_params
-    params.require(:portfolio).permit(:name)
-  end
+
+    def set_portfolios
+      @portfolios = Current.user.portfolios.includes(:investments)
+    end
+
+    def set_portfolio
+      @portfolio = Current.user.portfolios.find(params[:id])
+    end
+
+    def portfolio_params
+      params.require(:portfolio).permit(:name)
+    end
 end

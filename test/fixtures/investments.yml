@@ -4,7 +4,6 @@ one:
   name: MyString
   symbol: MyString
   exit_target_type: MyString
-  current_units: 9.99
   current_unit_price: 9.99
   portfolio: one
 
@@ -12,6 +11,5 @@ two:
   name: MyString
   symbol: MyString
   exit_target_type: MyString
-  current_units: 9.99
   current_unit_price: 9.99
   portfolio: two

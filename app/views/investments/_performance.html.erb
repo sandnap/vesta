@@ -36,7 +36,7 @@
         <dd class="mt-1 text-3xl font-semibold text-gray-900 dark:text-white">
           <% if investment.total_return.present? %>
             <span class="<%= investment.total_return >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400' %>">
-              <%= number_to_currency(investment.total_return) %>
+              <%= number_to_currency(investment.total_gain_loss) %>
             </span>
           <% else %>
             --
@@ -49,9 +49,9 @@
           Return Percentage
         </dt>
         <dd class="mt-1 text-3xl font-semibold text-gray-900 dark:text-white">
-          <% if investment.total_return_percentage.present? %>
+          <% if investment.total_return.present? %>
             <span class="<%= investment.total_return >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400' %>">
-              <%= number_to_percentage(investment.total_return_percentage * 100, precision: 2) %>
+              <%= number_to_percentage(investment.total_return * 100, precision: 2) %>
             </span>
           <% else %>
             --

@@ -48,14 +48,11 @@ class Investment < ApplicationRecord
     transactions.where(transaction_type: "buy").sum("unit_price * units")
   end
 
-  def total_return_percentage
-    return 0 if total_return.zero? || current_value.zero?
-    total_return / current_value
-  end
-
   def total_return
-    return 0 if current_unit_price.zero? || average_buy_price.zero?
-    total_units * (current_unit_price - average_buy_price)
+    return 0 if total_cost.zero?
+    total_gain_loss / total_cost
+    # return 0 if current_unit_price.zero? || average_buy_price.zero?
+    # total_units * (current_unit_price - average_buy_price)
   end
 
   def average_buy_price

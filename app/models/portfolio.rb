@@ -62,7 +62,7 @@ class Portfolio < ApplicationRecord
 
   def total_return
     return 0 if total_cost.zero?
-    (total_value - total_cost) / total_cost
+    total_gain_loss / total_cost
   end
 
   def realized_gain_loss

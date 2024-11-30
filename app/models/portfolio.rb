@@ -38,11 +38,6 @@ class Portfolio < ApplicationRecord
     start_date = days.days.ago.beginning_of_day
     dates = (start_date.to_date..Date.current).to_a
 
-    # Get all transactions within the date range
-    relevant_transactions = transactions
-      .where("transaction_date >= ?", start_date)
-      .order(transaction_date: :asc)
-
     # Calculate portfolio value for each date
     data_points = dates.map do |date|
       value = investments.sum do |investment|
@@ -67,11 +62,7 @@ class Portfolio < ApplicationRecord
 
   def total_return
     return 0 if total_cost.zero?
-    (total_value - total_cost) / total_cost
-  end
-
-  def total_return_value
-    total_value - total_cost
+    total_gain_loss / total_cost
   end
 
   def realized_gain_loss
@@ -88,8 +79,8 @@ class Portfolio < ApplicationRecord
 
   private
 
-  def number_to_percentage(number, options = {})
-    precision = options.fetch(:precision, 1)
-    "#{number.round(precision)}%"
-  end
+    def number_to_percentage(number, options = {})
+      precision = options.fetch(:precision, 1)
+      "#{number.round(precision)}%"
+    end
 end

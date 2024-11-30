@@ -1,15 +1,33 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  name: MyString
-  symbol: MyString
-  exit_target_type: MyString
-  current_unit_price: 9.99
-  portfolio: one
+google_stock:
+  name: "Google"
+  symbol: "GOOG"
+  investment_type: 0  # stock
+  status: 0  # active
+  current_unit_price: 155.60
+  portfolio: retirement
 
-two:
-  name: MyString
-  symbol: MyString
-  exit_target_type: MyString
-  current_unit_price: 9.99
-  portfolio: two
+apple_stock:
+  name: "Apple"
+  symbol: "AAPL"
+  investment_type: 0  # stock
+  status: 0  # active
+  current_unit_price: 180.75
+  portfolio: retirement
+
+gold_etf:
+  name: "Gold ETF"
+  symbol: "GLD"
+  investment_type: 3  # etf
+  status: 0  # active
+  current_unit_price: 2200.99
+  portfolio: trading
+
+closed_investment:
+  name: "Closed Fund"
+  symbol: "CLOSED"
+  investment_type: 2  # mutual_fund
+  status: 1  # closed
+  current_unit_price: 0.00
+  portfolio: trading

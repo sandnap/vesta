@@ -39,20 +39,20 @@ class NoteDraftsController < ApplicationController
 
   private
 
-  def set_notable
-    if params[:investment_id].present?
-      portfolio = Current.user.portfolios.find(params[:portfolio_id])
-      @notable = portfolio.investments.find(params[:investment_id])
-    elsif params[:portfolio_id].present?
-      @notable = Current.user.portfolios.find(params[:portfolio_id])
+    def set_notable
+      if params[:investment_id].present?
+        portfolio = Current.user.portfolios.find(params[:portfolio_id])
+        @notable = portfolio.investments.find(params[:investment_id])
+      elsif params[:portfolio_id].present?
+        @notable = Current.user.portfolios.find(params[:portfolio_id])
+      end
     end
-  end
 
-  def set_note_draft
-    @note_draft = Current.user.note_drafts.find_by!(notable: @notable)
-  end
+    def set_note_draft
+      @note_draft = Current.user.note_drafts.find_by!(notable: @notable)
+    end
 
-  def note_draft_params
-    params.require(:note_draft).permit(:content, :importance)
-  end
+    def note_draft_params
+      params.require(:note_draft).permit(:content, :importance)
+    end
 end

@@ -23,11 +23,11 @@ class NoteDraft < ApplicationRecord
 
   private
 
-  def set_default_importance
-    self.importance ||= 5
-  end
+    def set_default_importance
+      self.importance ||= 5
+    end
 
-  def set_last_autosaved_at
-    self.last_autosaved_at = Time.current
-  end
+    def set_last_autosaved_at
+      self.last_autosaved_at = Time.current
+    end
 end

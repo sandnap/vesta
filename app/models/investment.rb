@@ -48,13 +48,14 @@ class Investment < ApplicationRecord
     transactions.where(transaction_type: "buy").sum("unit_price * units")
   end
 
-  def total_return
-    return 0 if total_cost.zero?
-    (current_value - total_cost) / total_cost
+  def total_return_percentage
+    return 0 if total_return.zero? || current_value.zero?
+    total_return / current_value
   end
 
-  def total_return_value
-    current_value - total_cost
+  def total_return
+    return 0 if current_unit_price.zero? || average_buy_price.zero?
+    total_units * (current_unit_price - average_buy_price)
   end
 
   def average_buy_price
@@ -96,11 +97,6 @@ class Investment < ApplicationRecord
     first_transaction = transactions.order(transaction_date: :asc).first
     return 0 unless first_transaction
     ((Time.current - first_transaction.transaction_date) / 1.day).round
-  end
-
-  def annualized_return
-    return 0 if holding_period.zero? || total_cost.zero?
-    (((1 + total_return) ** (365.0 / holding_period)) - 1) * 100
   end
 
   def calculate_value_at_date(date)

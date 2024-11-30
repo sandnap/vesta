@@ -10,15 +10,6 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
-    services:
-      postgres:
-        image: postgres:14
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-        ports: ['5432:5432']
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-
     steps:
       - uses: actions/checkout@v3
 
@@ -29,19 +20,21 @@ jobs:
           bundler-cache: true
 
       - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libpq-dev
-          bundle install
+        run: bundle install
 
       - name: Set up database
         env:
           RAILS_ENV: test
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
         run: |
-          bundle exec rails db:create
-          bundle exec rails db:schema:load
+          bundle exec rails db:test:prepare
+
+      - name: Install JavaScript dependencies
+        run: |
+          npm install
+
+      - name: Build CSS
+        run: |
+          bundle exec rails tailwindcss:build
 
       - name: Precompile assets
         env:
@@ -52,6 +45,4 @@ jobs:
       - name: Run tests
         env:
           RAILS_ENV: test
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
         run: bundle exec rails test 

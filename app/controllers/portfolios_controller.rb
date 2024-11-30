@@ -21,7 +21,7 @@ class PortfoliosController < ApplicationController
       respond_to do |format|
         format.html { redirect_to @portfolio, notice: "Portfolio was successfully created." }
         format.turbo_stream {
-          replace_create_destroy_turbo_stream("Portfolio was successfully created.")
+          render_create_destroy_turbo_stream("Portfolio was successfully created.")
         }
       end
     else
@@ -38,8 +38,8 @@ class PortfoliosController < ApplicationController
         format.html { redirect_to @portfolio, notice: "Portfolio was successfully updated." }
         format.turbo_stream {
           render turbo_stream: [
-            turbo_stream.prepend("content", partial: "shared/flash", locals: { flash: [ [ "notice", "Potfolio was successfully updated." ] ] }),
-            turbo_stream.update("modal", ""),
+            close_modal_turbo_stream,
+            flash_turbo_stream_message("notice", "Portfolio was successfully updated."),
             turbo_stream.replace("portfolio_#{@portfolio.id}",
               partial: "portfolios/portfolio_header_tag",
               locals: { portfolio: @portfolio }
@@ -56,17 +56,17 @@ class PortfoliosController < ApplicationController
     @portfolio.destroy
     respond_to do |format|
       format.turbo_stream {
-        replace_create_destroy_turbo_stream("Portfolio was successfully deleted.")
+        render_create_destroy_turbo_stream("Portfolio was successfully deleted.")
       }
     end
   end
 
   private
 
-    def replace_create_destroy_turbo_stream(message)
+    def render_create_destroy_turbo_stream(message)
       render turbo_stream: [
-        turbo_stream.prepend("content", partial: "shared/flash", locals: { flash: [ [ "notice", message ] ] }),
-        turbo_stream.update("modal", ""),
+        close_modal_turbo_stream,
+        flash_turbo_stream_message("notice", message),
         turbo_stream.replace("portfolios",
           partial: "portfolios/portfolios",
           locals: { portfolios: @portfolios }

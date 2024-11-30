@@ -89,8 +89,8 @@ class TransactionsController < ApplicationController
 
     def replace_turbo_stream(message)
       render turbo_stream: [
-        turbo_stream.prepend("content", partial: "shared/flash", locals: { flash: [ [ "notice", message ] ] }),
-        turbo_stream.update("modal", ""),
+        close_modal_turbo_stream,
+        flash_turbo_stream_message("notice", message),
         turbo_stream.replace("transactions_table",
           partial: "investments/transactions",
           locals: { portfolio: @portfolio, investment: @investment, transactions: @investment.transactions }
@@ -98,6 +98,10 @@ class TransactionsController < ApplicationController
         turbo_stream.replace("investment_performance",
           partial: "investments/performance",
           locals: { investment: @investment }
+        ),
+        turbo_stream.replace("analytics",
+          partial: "portfolios/analytics",
+          locals: { portfolio: @portfolio }
         )
       ]
     end

@@ -15,7 +15,12 @@ class NotesController < ApplicationController
 
     if @note.save
       Current.user.note_drafts.find_by(notable: @notable)&.destroy
-      redirect_to polymorphic_path([ @portfolio, @notable ]), notice: "Note was successfully created."
+      set_notable
+      respond_to do |format|
+        format.turbo_stream {
+          render_turbo_stream("Note was successfully created.")
+        }
+      end
     else
       render :new, status: :unprocessable_entity
     end
@@ -26,7 +31,12 @@ class NotesController < ApplicationController
 
   def update
     if @note.update(note_params)
-      redirect_to polymorphic_path([ @portfolio, @notable ]), notice: "Note was successfully updated."
+      set_notable
+      respond_to do |format|
+        format.turbo_stream {
+          render_turbo_stream("Note was successfully updated.")
+        }
+      end
     else
       render :edit, status: :unprocessable_entity
     end
@@ -34,25 +44,47 @@ class NotesController < ApplicationController
 
   def destroy
     @note.destroy
-    redirect_to polymorphic_path([ @portfolio, @notable ]), notice: "Note was successfully deleted."
+    set_notable
+    respond_to do |format|
+      format.html { redirect_to polymorphic_path([ @portfolio, @notable ]), notice: "Note was successfully deleted." }
+      format.turbo_stream {
+        render_turbo_stream("Note was successfully deleted.")
+      }
+    end
   end
 
   private
 
-  def set_notable
-    if params[:investment_id].present?
-      @portfolio = Current.user.portfolios.find(params[:portfolio_id])
-      @notable = @portfolio.investments.find(params[:investment_id])
-    elsif params[:portfolio_id].present?
-      @notable = Current.user.portfolios.find(params[:portfolio_id])
+    def render_turbo_stream(message)
+      set_notable
+      # Should be "portfolios" or "investments"
+      path_prefix = @notable.class.name.downcase.pluralize
+      render turbo_stream: [
+        close_modal_turbo_stream,
+        flash_turbo_stream_message("notice", message),
+        turbo_stream.replace("notes-section",
+          partial: "#{path_prefix}/notes_section",
+          locals: { portfolio: params[:portfolio_id], investment: params[:investment_id], notes: @notes }
+        )
+      ]
     end
-  end
 
-  def set_note
-    @note = @notable.notes.find(params[:id])
-  end
+    def set_notable
+      if params[:investment_id].present?
+        @portfolio = Current.user.portfolios.find(params[:portfolio_id])
+        @notable = @portfolio.investments.find(params[:investment_id])
+      elsif params[:portfolio_id].present?
+        @notable = Current.user.portfolios.find(params[:portfolio_id])
+      end
 
-  def note_params
-    params.require(:note).permit(:content, :importance)
-  end
+      @notes = @notable.notes
+    end
+
+    def set_note
+      @note = @notable.notes.find(params[:id])
+    end
+
+    def note_params
+      params.require(:note).permit(:content, :importance)
+    end
 end

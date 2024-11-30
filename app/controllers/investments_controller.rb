@@ -15,7 +15,12 @@ class InvestmentsController < ApplicationController
     @investment = @portfolio.investments.build(investment_params)
 
     if @investment.save
-      redirect_to portfolio_path(@portfolio), notice: "Investment was successfully created."
+      respond_to do |format|
+        format.html { redirect_to portfolio_path(@portfolio), notice: "Investment was successfully created." }
+        format.turbo_stream {
+          render_turbo_stream("Investment was successfully created.")
+        }
+      end
     else
       render :new, status: :unprocessable_entity
     end
@@ -29,14 +34,7 @@ class InvestmentsController < ApplicationController
       respond_to do |format|
         format.html { redirect_to portfolio_path(@portfolio), notice: "Investment was successfully updated." }
         format.turbo_stream {
-          render turbo_stream: [
-            turbo_stream.prepend("content", partial: "shared/flash", locals: { flash: [ [ "notice", "Investment was successfully updated." ] ] }),
-            turbo_stream.update("modal", ""),
-            turbo_stream.replace("investments_table",
-              partial: "portfolios/investments_table",
-              locals: { portfolio: @portfolio, investments: @portfolio.investments.order(:name) }
-            )
-          ]
+          render_turbo_stream("Investment was successfully updated.")
         }
       end
     else
@@ -46,10 +44,30 @@ class InvestmentsController < ApplicationController
 
   def destroy
     @investment.destroy
-    redirect_to portfolio_path(@portfolio), notice: "Investment was successfully deleted."
+    respond_to do |format|
+      format.html { redirect_to portfolio_path(@portfolio), notice: "Investment was successfully deleted." }
+      format.turbo_stream {
+        render_turbo_stream("Investment was successfully deleted.")
+      }
+    end
   end
 
   private
+
+    def render_turbo_stream(message)
+      render turbo_stream: [
+        close_modal_turbo_stream,
+        flash_turbo_stream_message("notice", message),
+        turbo_stream.replace("investments_table",
+          partial: "portfolios/investments_table",
+          locals: { portfolio: @portfolio, investments: @portfolio.investments.order(:name) }
+        ),
+        turbo_stream.replace("analytics",
+          partial: "portfolios/analytics",
+          locals: { portfolio: @portfolio }
+        )
+      ]
+    end
 
     def set_portfolio
       @portfolio = Current.user.portfolios.find(params[:portfolio_id])

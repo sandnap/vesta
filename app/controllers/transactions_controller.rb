@@ -1,13 +1,13 @@
 class TransactionsController < ApplicationController
   before_action :set_portfolio
-  before_action :set_investment, only: [ :index, :edit, :update, :destroy ]
+  before_action :set_investment, only: [ :index, :edit, :update, :destroy, :export ]
   before_action :set_transaction, only: [ :edit, :update, :destroy ]
 
   def index
     @transactions = @investment.transactions.order(transaction_date: :desc)
 
     respond_to do |format|
-      format.html
+      format.html { render }
       format.csv { send_data @transactions.to_csv, filename: "#{@investment.name}-transactions-#{Date.current}.csv" }
       format.json { send_data @transactions.to_json_export, filename: "#{@investment.name}-transactions-#{Date.current}.json" }
     end

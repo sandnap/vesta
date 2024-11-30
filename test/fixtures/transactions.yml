@@ -1,15 +1,36 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  transaction_date: 2024-11-25 06:47:24
-  transaction_type: MyString
-  units: 9.99
-  unit_price: 9.99
-  investment: one
+google_buy:
+  investment: google_stock
+  transaction_type: "buy"
+  units: 10.0
+  unit_price: 150.00
+  transaction_date: <%= 30.days.ago %>
 
-two:
-  transaction_date: 2024-11-25 06:47:24
-  transaction_type: MyString
-  units: 9.99
-  unit_price: 9.99
-  investment: two
+google_buy_more:
+  investment: google_stock
+  transaction_type: "buy"
+  units: 5.0
+  unit_price: 145.00
+  transaction_date: <%= 15.days.ago %>
+
+apple_buy:
+  investment: apple_stock
+  transaction_type: "buy"
+  units: 20.0
+  unit_price: 170.00
+  transaction_date: <%= 60.days.ago %>
+
+apple_sell_partial:
+  investment: apple_stock
+  transaction_type: "sell"
+  units: 5.0
+  unit_price: 185.00
+  transaction_date: <%= 10.days.ago %>
+
+gold_buy:
+  investment: gold_etf
+  transaction_type: "buy"
+  units: 7.0
+  unit_price: 2000.00
+  transaction_date: <%= 45.days.ago %>

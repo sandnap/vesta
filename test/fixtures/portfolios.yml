@@ -1,9 +1,13 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  name: MyString
+retirement:
+  name: "Retirement Portfolio"
   user: one
 
-two:
-  name: MyString
+trading:
+  name: "Trading Portfolio"
   user: two
+
+empty:
+  name: "Empty Portfolio"
+  user: one

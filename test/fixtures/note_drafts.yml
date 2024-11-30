@@ -1,0 +1,19 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+portfolio_draft:
+  content: "Draft portfolio note content"
+  importance: 1
+  notable: retirement (Portfolio)
+  user: one
+  created_at: <%= 1.hour.ago %>
+  updated_at: <%= 30.minutes.ago %>
+  last_autosaved_at: <%= 15.minutes.ago %>
+
+investment_draft:
+  content: "Draft investment note content"
+  importance: 2
+  notable: google_stock (Investment)
+  user: one
+  created_at: <%= 2.hours.ago %>
+  updated_at: <%= 1.hour.ago %>
+  last_autosaved_at: <%= 45.minutes.ago %> 

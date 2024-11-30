@@ -11,7 +11,7 @@ class Note < ApplicationRecord
 
   private
 
-  def set_default_importance
-    self.importance ||= 5
-  end
+    def set_default_importance
+      self.importance ||= 5
+    end
 end

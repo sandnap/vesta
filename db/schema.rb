@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2024_11_30_165355) do
+ActiveRecord::Schema[8.0].define(version: 2024_12_02_193650) do
   create_table "investments", force: :cascade do |t|
     t.string "name", null: false
     t.string "symbol"
@@ -22,7 +22,7 @@ ActiveRecord::Schema[8.0].define(version: 2024_11_30_165355) do
     t.integer "status", default: 0
     t.integer "investment_type"
     t.index ["portfolio_id", "name"], name: "index_investments_on_portfolio_id_and_name", unique: true
-    t.index ["portfolio_id", "symbol"], name: "index_investments_on_portfolio_id_and_symbol", unique: true, where: "symbol IS NOT NULL /*application='VestaCursor'*/ /*application='VestaCursor'*/ /*application='VestaCursor'*/ /*application='VestaCursor'*/ /*application='VestaCursor'*/ /*application='VestaCursor'*/ /*application='VestaCursor'*/ /*application='VestaCursor'*/ /*application='VestaCursor'*/ /*application='VestaCursor'*/ /*application='VestaCursor'*/"
+    t.index ["portfolio_id", "symbol"], name: "index_investments_on_portfolio_id_and_symbol", unique: true, where: "symbol IS NOT NULL"
     t.index ["portfolio_id"], name: "index_investments_on_portfolio_id"
   end
 

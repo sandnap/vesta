@@ -1,11 +1,11 @@
-<div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
+<div class="flex min-h-full flex-col justify-center px-6 py-8 lg:px-8">
   <div class="sm:mx-auto sm:w-full sm:max-w-sm">
-    <h2 class="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900 dark:text-white">
+    <h2 class="text-center text-2xl font-bold leading-9 tracking-tight text-gray-900 dark:text-white">
       Create your account
     </h2>
   </div>
 
-  <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+  <div class="mt-6 sm:mx-auto sm:w-full sm:max-w-sm">
     <%= form_with model: @user, url: signup_path, class: "space-y-6", data: { turbo: false } do |form| %>
       <% if @user.errors.any? %>
         <div class="rounded-md bg-red-50 dark:bg-red-900/50 p-4 mb-6">
@@ -40,6 +40,9 @@
           <%= form.password_field :password, required: true,
               class: "block w-full rounded-lg border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 sm:text-sm sm:leading-6" %>
         </div>
+        <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+          Must be at least 6 characters with uppercase, lowercase, and number or special character
+        </p>
       </div>
 
       <div>

@@ -25,6 +25,7 @@ Rails.application.routes.draw do
 
   resource :settings, only: [ :show ] do
     patch :update_password, on: :collection
+    patch :disable_user, on: :collection
   end
 
   # Health check route

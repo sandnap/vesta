@@ -9,6 +9,11 @@
     </div>
   <% end %>
 </div>
+
+<% unless @portfolios.empty? %>
+  <%= render "index_performance", portfolios: @portfolios %>
+<% end %>
+
 <%= render "portfolios", portfolios: @portfolios %>
 <% if @portfolios.empty? %>
   <div class="text-center py-12">

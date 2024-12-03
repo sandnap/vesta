@@ -8,4 +8,14 @@ module PortfoliosHelper
       "text-blue-800 bg-blue-100 dark:bg-blue-900 dark:text-blue-300"
     end
   end
+
+  def total_return_color_class(value)
+    if value.positive?
+      "text-green-500 dark:text-green-400"
+    elsif value.negative?
+      "text-red-500 dark:text-red-400"
+    else
+      "text-gray-900 dark:text-white"
+    end
+  end
 end

@@ -2,6 +2,7 @@ Rails.application.routes.draw do
   # Authentication routes
   resource :session
   resources :passwords, param: :token
+  resource :signup, only: [ :new, :create ]
 
   # Main application routes
   resources :portfolios do

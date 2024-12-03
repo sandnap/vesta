@@ -1,5 +1,8 @@
+require "httparty"
+require "nokogiri"
+
 class PortfoliosController < ApplicationController
-  before_action :set_portfolio, only: [ :show, :edit, :update, :destroy ]
+  before_action :set_portfolio, only: [ :show, :edit, :update, :destroy, :refresh_investment_prices ]
   before_action :set_portfolios, only: [ :index, :create, :destroy ]
 
   def index
@@ -61,6 +64,38 @@ class PortfoliosController < ApplicationController
     end
   end
 
+  def refresh_investment_prices
+    @portfolio.investments.each do |investment|
+      begin
+        # Simulate API call to get current price
+        if investment.symbol.blank?
+          investment.symbol = "GC=F" if investment.name.upcase == "GOLD"
+          investment.symbol = "SI=F" if investment.name.upcase == "Silver"
+          investment.symbol = "BTC-USD" if investment.name.upcase == "Bitcoin"
+          investment.symbol = "ETH-USD" if investment.name.upcase == "Ethereum"
+        end
+        if investment.symbol.present?
+          response = fetch_current_price(investment.symbol.upcase)
+          investment.update(current_unit_price: response[:price])
+        end
+      rescue => e
+        Rails.logger.error "Failed to update price for #{investment.symbol}: #{e.message}"
+      end
+    end
+
+    respond_to do |format|
+      format.turbo_stream {
+        render turbo_stream: [
+          turbo_stream.replace("investments_table",
+            partial: "investments_table",
+            locals: { portfolio: @portfolio, investments: @portfolio.investments.order(:name) }
+          ),
+          flash_turbo_stream_message("notice", "Investment prices have been refreshed.")
+        ]
+      }
+    end
+  end
+
   private
 
     def render_create_destroy_turbo_stream(message)
@@ -88,5 +123,17 @@ class PortfoliosController < ApplicationController
 
     def portfolio_params
       params.require(:portfolio).permit(:name)
+    end
+
+    def fetch_current_price(symbol)
+      response = HTTParty.get("https://finance.yahoo.com/quote/#{symbol}/")
+      doc = Nokogiri::HTML(response.body)
+      nodes = doc.css("fin-streamer.livePrice span")
+
+      return { price: nodes.first.text.gsub(",", "") } if nodes.any? && nodes.first.text.present?
+
+      raise "unable to fetch price for #{symbol}"
+    rescue => e
+      raise "Failed to fetch price: #{e.message}"
     end
 end

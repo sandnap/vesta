@@ -5,6 +5,9 @@ Rails.application.routes.draw do
 
   # Main application routes
   resources :portfolios do
+    member do
+      post :refresh_investment_prices
+    end
     resource :note_draft, only: [ :show, :create, :update, :destroy ]
     resources :transactions, only: [ :new, :create ]
     resources :investments, except: [ :index ] do

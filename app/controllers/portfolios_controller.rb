@@ -90,6 +90,14 @@ class PortfoliosController < ApplicationController
             partial: "investments_table",
             locals: { portfolio: @portfolio, investments: @portfolio.investments.order(:name) }
           ),
+          turbo_stream.replace("portfolio_performance",
+            partial: "portfolio_performance",
+            locals: { portfolio: @portfolio }
+          ),
+          turbo_stream.replace("analytics",
+            partial: "analytics",
+            locals: { portfolio: @portfolio }
+          ),
           flash_turbo_stream_message("notice", "Investment prices have been refreshed.")
         ]
       }

@@ -9,7 +9,8 @@ module PortfoliosHelper
     end
   end
 
-  def total_return_color_class(value)
+  def positive_negative_color_class(value)
+    return nil if value.nil?
     if value.positive?
       "text-green-500 dark:text-green-400"
     elsif value.negative?
@@ -17,5 +18,9 @@ module PortfoliosHelper
     else
       "text-gray-900 dark:text-white"
     end
+  end
+
+  def current_price_display(investment)
+    "#{number_to_currency(investment.current_unit_price)} | #{number_to_currency(investment.current_price_change)} #{investment.current_price_change_percent}"
   end
 end

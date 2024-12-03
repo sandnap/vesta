@@ -76,7 +76,7 @@ class PortfoliosController < ApplicationController
         end
         if investment.symbol.present?
           response = fetch_current_price(investment.symbol.upcase)
-          investment.update(current_unit_price: response[:price])
+          investment.update(current_unit_price: response[:price], current_price_change: response[:change_amount], current_price_change_percent: response[:change_percent])
         end
       rescue => e
         Rails.logger.error "Failed to update price for #{investment.symbol}: #{e.message}"
@@ -136,9 +136,18 @@ class PortfoliosController < ApplicationController
     def fetch_current_price(symbol)
       response = HTTParty.get("https://finance.yahoo.com/quote/#{symbol}/")
       doc = Nokogiri::HTML(response.body)
-      nodes = doc.css("fin-streamer.livePrice span")
 
-      return { price: nodes.first.text.gsub(",", "") } if nodes.any? && nodes.first.text.present?
+      price_nodes = doc.css("fin-streamer.livePrice span")
+      price = price_nodes.any? && price_nodes.first.text.present? ? price_nodes.first.text.gsub(",", "") : nil
+
+      change_amount_nodes = doc.css("fin-streamer.priceChange span")
+      Rails.logger.info "change_amount_nodes: #{change_amount_nodes.first.inspect}"
+
+      # price is first followed by percent change
+      change_amount = change_amount_nodes.any? && change_amount_nodes.first.text.present? ? change_amount_nodes.first.text : nil
+      change_percent = change_amount_nodes.any? && change_amount_nodes.last.text.present? ? change_amount_nodes.last.text : nil
+
+      return { price: price, change_amount: change_amount, change_percent: change_percent } if price.present?
 
       raise "unable to fetch price for #{symbol}"
     rescue => e

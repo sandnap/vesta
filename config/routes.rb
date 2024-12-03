@@ -22,6 +22,10 @@ Rails.application.routes.draw do
     resources :notes, except: [ :index, :show ]
   end
 
+  resource :settings, only: [ :show ] do
+    patch :update_password, on: :collection
+  end
+
   # Health check route
   get "up" => "rails/health#show", as: :rails_health_check
 

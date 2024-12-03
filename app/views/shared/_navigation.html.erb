@@ -33,6 +33,11 @@
                 </p>
               </div>
               <ul class="py-1" role="none">
+                <li>
+                  <%= link_to settings_path, class: "block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" do %>
+                    Settings
+                  <% end %>
+                </li>
                 <li data-controller="theme">
                   <button type="button" data-action="theme#toggle" class="flex w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">
                     <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">

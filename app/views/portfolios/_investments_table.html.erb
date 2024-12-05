@@ -15,12 +15,14 @@
           <% investments.each do |investment| %>
             <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
               <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                <%= investment.name %>
-                <% if investment.symbol.present? %>
-                  <span class="ml-2 inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10 dark:bg-blue-900 dark:text-blue-300">
-                    <%= investment.symbol %>
-                  </span>
-                <% end %>
+                <a href="https://finance.yahoo.com/quote/<%= investment.symbol %>" target="_blank">
+                  <%= investment.name %>
+                  <% if investment.symbol.present? %>
+                    <span class="ml-2 inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10 dark:bg-blue-900 dark:text-blue-300">
+                      <%= investment.symbol %>
+                    </span>
+                  <% end %>
+                </a>
               </td>
               <td class="px-6 py-4"><%= number_with_delimiter(investment.total_units) %></td>
               <td class="px-6 py-4 <%= positive_negative_color_class(investment.current_price_change) %>"><%= current_price_display(investment) %></td>

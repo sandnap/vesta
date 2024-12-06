@@ -70,13 +70,12 @@ class PortfoliosController < ApplicationController
         # Simulate API call to get current price
         if investment.symbol.blank?
           investment.symbol = "GC=F" if investment.name.upcase == "GOLD"
-          investment.symbol = "SI=F" if investment.name.upcase == "Silver"
-          investment.symbol = "BTC-USD" if investment.name.upcase == "Bitcoin"
-          investment.symbol = "ETH-USD" if investment.name.upcase == "Ethereum"
+          investment.symbol = "SI=F" if investment.name.upcase == "SILVER"
+          investment.symbol = "BTC-USD" if investment.name.upcase == "BITCOIN"
+          investment.symbol = "ETH-USD" if investment.name.upcase == "ETHEREUM"
         end
         if investment.symbol.present?
           response = fetch_current_price(investment.symbol.upcase)
-          # investment.update(current_unit_price: response[:price], current_price_change: response[:change_amount], current_price_change_percent: response[:change_percent])
           investment.update_current_price(response[:price])
         end
       rescue => e

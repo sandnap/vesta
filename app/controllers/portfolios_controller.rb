@@ -76,7 +76,8 @@ class PortfoliosController < ApplicationController
         end
         if investment.symbol.present?
           response = fetch_current_price(investment.symbol.upcase)
-          investment.update(current_unit_price: response[:price], current_price_change: response[:change_amount], current_price_change_percent: response[:change_percent])
+          # investment.update(current_unit_price: response[:price], current_price_change: response[:change_amount], current_price_change_percent: response[:change_percent])
+          investment.update_current_price(response[:price])
         end
       rescue => e
         Rails.logger.error "Failed to update price for #{investment.symbol}: #{e.message}"
@@ -134,23 +135,34 @@ class PortfoliosController < ApplicationController
     end
 
     def fetch_current_price(symbol)
-      url = "https://finance.yahoo.com/quote/#{symbol}/"
+      url = "https://finance.yahoo.com/quote/#{symbol}?p=#{symbol}"
 
       Rails.logger.info "Refresh price url: #{url}"
 
-      response = HTTParty.get(url)
+      headers = {
+        "User-Agent" => "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+        "Cache-Control" => "no-cache",
+        "Pragma" => "no-cache",
+        "accept" => "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+        "Accept-Language" => "en-US,en;q=0.9",
+        "Accept-Encoding" => "gzip, deflate, br",
+        ":authority" => "finance.yahoo.com",
+        ":method" => "GET",
+        ":path" => "/quote/#{symbol}?p=#{symbol}",
+        ":scheme" => "https"
+      }
+
+      response = HTTParty.get(url, headers: headers)
       doc = Nokogiri::HTML(response.body)
 
-      price_nodes = doc.css("fin-streamer.livePrice span")
-      price = price_nodes.any? && price_nodes.first.text.present? ? price_nodes.first.text.gsub(",", "") : nil
+      if symbol.include?("=")
+        price_nodes = doc.css("div[data-testid='quote-statistics'] ul li span[title='Last Price'] + span")
+      else
+        price_nodes = doc.css("div[data-testid='quote-statistics'] ul li span fin-streamer[data-field='regularMarketPreviousClose']")
+      end
 
-      change_amount_nodes = doc.css("fin-streamer.priceChange span")
-
-      # price is first followed by percent change
-      change_amount = change_amount_nodes.any? && change_amount_nodes.first..present? ? change_amount_nodes.first.text : nil
-      change_percent = change_amount_nodes.any? && change_amount_nodes.last.text.present? ? change_amount_nodes.last.text : nil
-
-      data ={ price: price, change_amount: change_amount, change_percent: change_percent } if price.present?
+      price = price_nodes.first.text.gsub(",", "").to_f if price_nodes.any?
+      data = { price: price } if price.present?
 
       Rails.logger.info "Refresh price data: #{data.inspect}"
 

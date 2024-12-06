@@ -130,22 +130,4 @@ class Investment < ApplicationRecord
       values: filled_data.map { |_, value| value }
     }
   end
-
-  def update_current_price(new_price)
-    return false unless new_price.present? && new_price != current_unit_price
-
-    old_price = current_unit_price || 0
-    self.current_price_change = new_price - old_price
-
-    if old_price.zero?
-      self.current_price_change_percent = "(+0.00%)"
-    else
-      percent_change = (current_price_change / old_price) * 100
-      sign = percent_change >= 0 ? "+" : "-"
-      self.current_price_change_percent = "(#{sign}#{percent_change.abs.round(2)}%)"
-    end
-
-    self.current_unit_price = new_price
-    save
-  end
 end

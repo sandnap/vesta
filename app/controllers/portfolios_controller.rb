@@ -67,7 +67,6 @@ class PortfoliosController < ApplicationController
   def refresh_investment_prices
     @portfolio.investments.each do |investment|
       begin
-        # Simulate API call to get current price
         if investment.symbol.blank?
           investment.symbol = "GC=F" if investment.name.upcase == "GOLD"
           investment.symbol = "SI=F" if investment.name.upcase == "SILVER"
@@ -76,7 +75,9 @@ class PortfoliosController < ApplicationController
         end
         if investment.symbol.present?
           response = fetch_current_price(investment.symbol.upcase)
-          investment.update_current_price(response[:price])
+          investment.update(current_unit_price: response[:price],
+            current_price_change: response[:change_amount],
+            current_price_change_percent: response[:change_percent]) if response[:price].present? && response[:price] != investment.current_unit_price
         end
       rescue => e
         Rails.logger.error "Failed to update price for #{investment.symbol}: #{e.message}"
@@ -154,14 +155,16 @@ class PortfoliosController < ApplicationController
       response = HTTParty.get(url, headers: headers)
       doc = Nokogiri::HTML(response.body)
 
-      if symbol.include?("=")
-        price_nodes = doc.css("div[data-testid='quote-statistics'] ul li span[title='Last Price'] + span")
-      else
-        price_nodes = doc.css("div[data-testid='quote-statistics'] ul li span fin-streamer[data-field='regularMarketPreviousClose']")
-      end
+      price_nodes = doc.css("fin-streamer.livePrice span")
+      price = price_nodes.any? && price_nodes.first.text.present? ? price_nodes.first.text.gsub(",", "") : nil
 
-      price = price_nodes.first.text.gsub(",", "").to_f if price_nodes.any?
-      data = { price: price } if price.present?
+      change_amount_nodes = doc.css("fin-streamer.priceChange span")
+
+      # price is first followed by percent change
+      change_amount = change_amount_nodes.any? && change_amount_nodes.first..present? ? change_amount_nodes.first.text : nil
+      change_percent = change_amount_nodes.any? && change_amount_nodes.last.text.present? ? change_amount_nodes.last.text : nil
+
+      data ={ price: price, change_amount: change_amount, change_percent: change_percent } if price.present?
 
       Rails.logger.info "Refresh price data: #{data.inspect}"
 

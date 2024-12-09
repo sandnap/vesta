@@ -30,7 +30,7 @@ gem "kamal", require: false
 # Add HTTP asset caching/compression and X-Sendfile acceleration to Puma [https://github.com/basecamp/thruster/]
 gem "thruster", require: false
 
-gem "nokogiri", "~> 1.16"
+gem "nokogiri", "~> 1.17"
 gem "httparty", "~> 0.22.0"
 
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]

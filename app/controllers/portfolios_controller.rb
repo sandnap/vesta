@@ -135,7 +135,7 @@ class PortfoliosController < ApplicationController
     end
 
     def fetch_current_price(symbol)
-      url = "https://finance.yahoo.com/quote/#{symbol}?p=#{symbol}"
+      url = "https://finance.yahoo.com/quote/#{symbol}/?p=#{symbol}"
 
       Rails.logger.info "Refresh price url: #{url}"
 
@@ -148,21 +148,21 @@ class PortfoliosController < ApplicationController
         "Accept-Encoding" => "gzip, deflate, br",
         ":authority" => "finance.yahoo.com",
         ":method" => "GET",
-        ":path" => "/quote/#{symbol}?p=#{symbol}",
+        ":path" => "/quote/#{symbol}/?p=#{symbol}",
         ":scheme" => "https"
       }
 
       response = HTTParty.get(url, headers: headers)
       doc = Nokogiri::HTML(response.body)
 
-      price_nodes = doc.css("fin-streamer.livePrice span")
+      price_nodes = doc.xpath("//span[@data-testid='qsp-price']")
       price = price_nodes.any? && price_nodes.first.text.present? ? price_nodes.first.text.gsub(",", "") : nil
 
-      change_amount_nodes = doc.css("fin-streamer.priceChange span")
+      change_amount_nodes = doc.xpath("//span[@data-testid='qsp-price-change']")
+      change_percent_nodes = doc.xpath("//span[@data-testid='qsp-price-change-percent']")
 
-      # price is first followed by percent change
-      change_amount = change_amount_nodes.any? && change_amount_nodes.first..present? ? change_amount_nodes.first.text : nil
-      change_percent = change_amount_nodes.any? && change_amount_nodes.last.text.present? ? change_amount_nodes.last.text : nil
+      change_amount = change_amount_nodes.any? && change_amount_nodes.first.text.present? ? change_amount_nodes.first.text.gsub(",", "") : nil
+      change_percent = change_percent_nodes.any? && change_percent_nodes.first.text.present? ? change_percent_nodes.first.text.gsub(",", "") : nil
 
       data ={ price: price, change_amount: change_amount, change_percent: change_percent } if price.present?
 

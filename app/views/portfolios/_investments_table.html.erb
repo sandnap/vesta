@@ -1,5 +1,13 @@
-<div id="investments_table">
+<div id="investments_table" data-controller="investments-table">
   <% if investments.any? %>
+    <div class="flex items-center justify-end mb-4">
+      <button type="button" data-action="investments-table#toggle" class="text-sm text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200 flex items-center">
+        <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+        </svg>
+        Toggle Zero Units
+      </button>
+    </div>
     <div class="relative overflow-x-auto">
       <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
@@ -13,7 +21,9 @@
         </thead>
         <tbody>
           <% investments.each do |investment| %>
-            <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+            <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700" 
+                data-investments-table-target="row"
+                data-units="<%= investment.total_units %>">
               <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                 <a href="https://finance.yahoo.com/quote/<%= investment.symbol %>" target="_blank">
                   <%= investment.name %>

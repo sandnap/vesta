@@ -31,7 +31,7 @@ gem "kamal", require: false
 gem "thruster", require: false
 
 gem "nokogiri", "~> 1.18"
-gem "httparty", "~> 0.22.0"
+gem "httparty", "~> 0.23.1"
 
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 # gem "image_processing", "~> 1.2"
